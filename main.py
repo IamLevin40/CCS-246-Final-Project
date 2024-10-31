@@ -23,11 +23,10 @@ def main():
     # Enemy spawns in the center of the enemy safe zone
     enemy_start_y = random.choice([1, ROWS - 4])  # Center of safe zone
     enemy_start_x = random.choice([1, COLS - 4])
-    print("x: ", enemy_start_x, " y: ", enemy_start_y)
     enemy = EnemyAI(enemy_start_x, enemy_start_y, INIT_SPEED_ENEMY)
 
     maze = generate_maze(ROWS, COLS)
-    maze = add_zone(maze, enemy_start_y, enemy_start_x)
+    maze = add_zone(maze, enemy_start_x, enemy_start_y)
 
     camera = Camera(WIDTH, HEIGHT)
 
