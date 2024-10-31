@@ -9,7 +9,7 @@ class Camera:
         self.width = width
         self.height = height
         self.smoothness = 0.8  # Controls how fast the camera moves in pixels per second
-        self.max_offset = 50  # Maximum distance the camera will "peek" at the player
+        self.max_offset = 36  # Maximum distance the camera will "peek" at the player
 
         # Maze center position in pixels (anchor point)
         self.maze_center = pygame.Vector2(COLS // 2 * TILE_SIZE, ROWS // 2 * TILE_SIZE)

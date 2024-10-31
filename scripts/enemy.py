@@ -3,13 +3,21 @@
 import pygame
 import math
 from queue import PriorityQueue
-from settings import TILE_SIZE
+from settings import TILE_SIZE, ENEMY_SPRITES
+from utils import load_animation_sprites
+
 class EnemyAI:
-    def __init__(self, x, y, speed, color):
+    def __init__(self, x, y, speed):
         self.x = x
         self.y = y
         self.speed = speed  # Control speed
-        self.color = color
+        
+        # Load animations for each state
+        self.animations = {state: load_animation_sprites(path, TILE_SIZE) for state, path in ENEMY_SPRITES.items()}
+        self.current_state = "rest"  # Start in resting state
+        self.frame_index = 0
+        self.animation_timer = 0
+        self.animation_speed = 0.1  # Time per frame in seconds
 
         # Store floating-point positions
         self.float_x = x
@@ -82,10 +90,29 @@ class EnemyAI:
             if t >= 1:
                 self.is_moving = False
                 self.x, self.y = self.target_pos  # Update integer position to target
+            
+            if self.target_pos[0] > self.float_x:
+                self.current_state = "right"
+            elif self.target_pos[0] < self.float_x:
+                self.current_state = "left"
+            elif self.target_pos[1] > self.float_y:
+                self.current_state = "down"
+            elif self.target_pos[1] < self.float_y:
+                self.current_state = "up"
 
         # Update rect for rendering
         self.rect.topleft = (int(self.float_x * TILE_SIZE), int(self.float_y * TILE_SIZE))
 
+    def update_frame(self, delta_time):
+        self.animation_timer += delta_time
+        frames = self.animations[self.current_state]
+
+        if self.animation_timer >= self.animation_speed:
+            self.animation_timer = 0
+            self.frame_index = (self.frame_index + 1) % len(frames)
+
     def draw(self, win, camera):
+        # Adjust position by camera and draw enemy
         adjusted_rect = camera.apply(self)
-        pygame.draw.rect(win, self.color, adjusted_rect)
+        current_frame = self.animations[self.current_state][self.frame_index]
+        win.blit(current_frame, adjusted_rect)
