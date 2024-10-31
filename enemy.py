@@ -3,18 +3,22 @@
 import pygame
 import math
 from queue import PriorityQueue
-from settings import TILE_SIZE, RED
-
+from settings import TILE_SIZE
 class EnemyAI:
-    def __init__(self, x, y, speed):
+    def __init__(self, x, y, speed, color):
         self.x = x
         self.y = y
         self.speed = speed  # Control speed
+        self.color = color
 
         # Store floating-point positions
         self.float_x = x
         self.float_y = y
-        self.color = RED
+        self.start_pos = (x, y)
+        self.target_pos = (x, y)
+        self.is_moving = False
+        self.elapsed_time = 0
+
         self.rect = pygame.Rect(self.x * TILE_SIZE, self.y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
 
     def heuristic(self, x1, y1, x2, y2):
@@ -53,18 +57,34 @@ class EnemyAI:
 
         return []
 
-    def move(self, player_pos, maze):
-        path = self.a_star((int(self.float_x), int(self.float_y)), player_pos, maze)
-        if path:
-            next_move = path[0]
-            dx = next_move[0] - int(self.float_x)
-            dy = next_move[1] - int(self.float_y)
+    def move(self, player_pos, maze, delta_time):
+        if not self.is_moving:
+            # Calculate new path if not moving
+            path = self.a_star((int(self.float_x), int(self.float_y)), player_pos, maze)
+            if path:
+                # Set the next tile in path as the target
+                next_move = path[0]
+                self.start_pos = (self.float_x, self.float_y)
+                self.target_pos = next_move
+                self.is_moving = True
+                self.elapsed_time = 0  # Reset the time elapsed for the move
 
-            # Move towards the next path step based on speed
-            self.float_x += dx * self.speed
-            self.float_y += dy * self.speed
-            self.x, self.y = int(self.float_x), int(self.float_y)
-            self.rect.topleft = (self.x * TILE_SIZE, self.y * TILE_SIZE)  # Update rect position
+        if self.is_moving:
+            # Increment elapsed time
+            self.elapsed_time += delta_time
+            t = min(self.elapsed_time * self.speed, 1)  # Normalize to [0, 1]
+
+            # Interpolate position between start and target
+            self.float_x = (1 - t) * self.start_pos[0] + t * self.target_pos[0]
+            self.float_y = (1 - t) * self.start_pos[1] + t * self.target_pos[1]
+
+            # Stop moving once the target is reached
+            if t >= 1:
+                self.is_moving = False
+                self.x, self.y = self.target_pos  # Update integer position to target
+
+        # Update rect for rendering
+        self.rect.topleft = (int(self.float_x * TILE_SIZE), int(self.float_y * TILE_SIZE))
 
     def draw(self, win, camera):
         adjusted_rect = camera.apply(self)

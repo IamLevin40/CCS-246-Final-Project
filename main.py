@@ -18,12 +18,12 @@ def main():
     # Player spawns in the center of the player safe zone
     player_start_x = ROWS // 2
     player_start_y = COLS // 2
-    player = Player(player_start_x, player_start_y, INIT_SPEED_PLAYER)
+    player = Player(player_start_x, player_start_y, INIT_SPEED_PLAYER, BLUE)
 
     # Enemy spawns in the center of the enemy safe zone
     enemy_start_y = random.choice([1, ROWS - 4])  # Center of safe zone
     enemy_start_x = random.choice([1, COLS - 4])
-    enemy = EnemyAI(enemy_start_x, enemy_start_y, INIT_SPEED_ENEMY)
+    enemy = EnemyAI(enemy_start_x, enemy_start_y, INIT_SPEED_ENEMY, RED)
 
     maze = generate_maze(ROWS, COLS)
     maze = add_zone(maze, enemy_start_x, enemy_start_y)
@@ -32,7 +32,7 @@ def main():
 
     running = True
     while running:
-        clock.tick(FPS)
+        delta_time = clock.tick(FPS) / 1000.0  # Convert to seconds
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -48,8 +48,11 @@ def main():
         if keys[pygame.K_d]:
             player.move(1, 0, maze)
 
-        enemy.move((player.x, player.y), maze)
-        camera.follow(player)
+        # Update player and enemy with time delta
+        player.update_position(delta_time)
+        enemy.move((player.x, player.y), maze, delta_time)
+
+        camera.follow((player.x, player.y), delta_time)
 
         WIN.fill(WHITE)
         draw_maze(maze, camera)
