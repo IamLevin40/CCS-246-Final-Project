@@ -1,8 +1,7 @@
 # camera.py
 
 import pygame
-from settings import TILE_SIZE, WIDTH, HEIGHT, ROWS, COLS
-
+from settings import *
 class Camera:
     def __init__(self, width, height):
         self.camera = pygame.Rect(0, 0, width, height)

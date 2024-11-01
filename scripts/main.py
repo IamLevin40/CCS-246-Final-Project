@@ -4,15 +4,17 @@ import pygame, random
 from settings import *
 from player import Player
 from enemy import EnemyAI
-from maze import generate_maze, add_zone
+from maze import *
 from camera import Camera
 
-def draw_maze(maze, camera):
-    for i in range(ROWS):
-        for j in range(COLS):
-            color = WALL_COLOR if maze[i][j] == 'X' else PATH_COLOR
+def draw_maze(maze, camera, tile_map):
+    for i in range(len(maze)):
+        for j in range(len(maze[0])):
+            tile_sprite = tile_map[i][j]
             x, y = camera.apply_to_maze(j, i)
-            pygame.draw.rect(WIN, color, (x, y, TILE_SIZE, TILE_SIZE))
+            
+            if tile_sprite:  # Only draw if tile_sprite is not None
+                WIN.blit(tile_sprite, (x, y))
 
 def title_screen():
     running = True
@@ -63,12 +65,13 @@ def start_mechanics():
 
     maze = generate_maze(ROWS, COLS)
     maze = add_zone(maze, enemy_start_x, enemy_start_y)
+    tile_map = generate_tiles(maze)
 
     camera = Camera(WIDTH, HEIGHT)
-    return player, enemy, maze, camera
+    return player, enemy, maze, tile_map, camera
 
 def game_loop():
-    player, enemy, maze, camera = start_mechanics()   # Start summoning player and enemies
+    player, enemy, maze, tile_map, camera = start_mechanics()   # Start summoning player and enemies
     running = True
     while running:
         delta_time = clock.tick(FPS) / 1000.0  # Convert to seconds
@@ -94,7 +97,8 @@ def game_loop():
         camera.follow((player.x, player.y), delta_time)
 
         WIN.fill(WHITE)
-        draw_maze(maze, camera)
+        draw_maze(maze, camera, tile_map)
+        
         player.draw(WIN, camera)
         enemy.draw(WIN, camera)
         pygame.display.update()

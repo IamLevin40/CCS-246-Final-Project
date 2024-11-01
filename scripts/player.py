@@ -1,8 +1,8 @@
 # player.py
 
 import pygame
-from settings import TILE_SIZE, PLAYER_SPRITES
-from utils import load_animation_sprites
+from settings import *
+from utils import *
 
 class Player:
     def __init__(self, x, y, speed):
@@ -11,7 +11,7 @@ class Player:
         self.speed = speed
         
         # Load animations for each state
-        self.animations = {state: load_animation_sprites(path, TILE_SIZE) for state, path in PLAYER_SPRITES.items()}
+        self.animations = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in PLAYER_SPRITES.items()}
         self.current_state = "rest"  # Start in resting state
         self.frame_index = 0
         self.animation_timer = 0

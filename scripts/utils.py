@@ -2,7 +2,7 @@
 
 import pygame
 
-def load_animation_sprites(path, tile_size):
+def split_and_resize_sprite(path, tile_size):
     # Load the full sprite sheet
     sheet = pygame.image.load(path).convert_alpha()
     width, height = sheet.get_size()

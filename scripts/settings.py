@@ -21,19 +21,57 @@ DARK_GREEN = (50, 190, 50)
 
 # Paths to sprite images
 PLAYER_SPRITES = {
-    "rest": "sprites/player_rest.png",
-    "up": "sprites/player_up.png",
-    "down": "sprites/player_down.png",
-    "left": "sprites/player_left.png",
-    "right": "sprites/player_right.png"
+    "rest": "sprites/player/player_rest.png",
+    "up": "sprites/player/player_up.png",
+    "down": "sprites/player/player_down.png",
+    "left": "sprites/player/player_left.png",
+    "right": "sprites/player/player_right.png"
 }
 
 ENEMY_SPRITES = {
-    "rest": "sprites/enemy_rest.png",
-    "up": "sprites/enemy_up.png",
-    "down": "sprites/enemy_down.png",
-    "left": "sprites/enemy_left.png",
-    "right": "sprites/enemy_right.png"
+    "rest": "sprites/enemy/enemy_rest.png",
+    "up": "sprites/enemy/enemy_up.png",
+    "down": "sprites/enemy/enemy_down.png",
+    "left": "sprites/enemy/enemy_left.png",
+    "right": "sprites/enemy/enemy_right.png"
+}
+
+PATH_TILE_SPRITES = {
+    "all_sides": "",
+    "up_down": "",
+    "left_right": "",
+    "up_right": "",
+    "up_left": "",
+    "down_right": "",
+    "down_left": "",
+    "up_right_down": "",
+    "up_left_down": "",
+    "up_left_right": "",
+    "down_left_right": "",
+    "only_up": "",
+    "only_right": "",
+    "only_down": "",
+    "only_left": "",
+    "no_sides": "",
+}
+
+WALL_TILE_SPRITES = {
+    "all_sides": "",
+    "up_down": "",
+    "left_right": "",
+    "up_right": "",
+    "up_left": "",
+    "down_right": "",
+    "down_left": "",
+    "up_right_down": "",
+    "up_left_down": "",
+    "up_left_right": "",
+    "down_left_right": "",
+    "only_up": "",
+    "only_right": "",
+    "only_down": "",
+    "only_left": "",
+    "no_sides": "",
 }
 
 # Initialize Pygame

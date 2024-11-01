@@ -3,8 +3,8 @@
 import pygame
 import math
 from queue import PriorityQueue
-from settings import TILE_SIZE, ENEMY_SPRITES
-from utils import load_animation_sprites
+from settings import *
+from utils import split_and_resize_sprite
 
 class EnemyAI:
     def __init__(self, x, y, speed):
@@ -13,7 +13,7 @@ class EnemyAI:
         self.speed = speed  # Control speed
         
         # Load animations for each state
-        self.animations = {state: load_animation_sprites(path, TILE_SIZE) for state, path in ENEMY_SPRITES.items()}
+        self.animations = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in ENEMY_SPRITES.items()}
         self.current_state = "rest"  # Start in resting state
         self.frame_index = 0
         self.animation_timer = 0
