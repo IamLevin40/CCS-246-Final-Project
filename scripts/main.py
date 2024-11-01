@@ -22,11 +22,11 @@ def title_screen():
     button_rect = pygame.Rect(WIDTH // 2 - 50, HEIGHT // 2, 100, 50)  # Button rectangle
 
     while running:
-        WIN.fill(WHITE)  # Clear the window with a white background
+        WIN.fill(PATH_COLOR)  # Clear the window with a white background
 
         # Render title text
-        font = pygame.font.Font(None, 64)  # Use a default font with size 74
-        title_surface = font.render("Dungeon Labyrinth", True, BLACK)
+        font = pygame.font.Font(None, 64)  # Use a default font with size 64
+        title_surface = font.render("Dungeon Labyrinth", True, WHITE)
         title_rect = title_surface.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))
         WIN.blit(title_surface, title_rect)  # Draw the title
 
@@ -59,8 +59,8 @@ def start_mechanics():
     player = Player(player_start_x, player_start_y, INIT_SPEED_PLAYER)
 
     # Enemy spawns in the center of the enemy safe zone
-    enemy_start_y = random.choice([1, ROWS - 4])  # Center of safe zone
-    enemy_start_x = random.choice([1, COLS - 4])
+    enemy_start_x = random.choice([1, ROWS - 4])  # Center of safe zone
+    enemy_start_y = random.choice([1, COLS - 4])
     enemy = EnemyAI(enemy_start_x, enemy_start_y, INIT_SPEED_ENEMY)
 
     maze = generate_maze(ROWS, COLS)
@@ -96,7 +96,7 @@ def game_loop():
 
         camera.follow((player.x, player.y), delta_time)
 
-        WIN.fill(WHITE)
+        WIN.fill(PATH_COLOR)
         draw_maze(maze, camera, tile_map)
         
         player.draw(WIN, camera)
