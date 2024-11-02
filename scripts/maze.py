@@ -1,11 +1,8 @@
 # maze.py
 
-import random
+import random, math
 from settings import *
 from utils import *
-
-PATH_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in PATH_TILE_SPRITES.items()}
-WALL_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in WALL_TILE_SPRITES.items()}
 
 def generate_maze(rows, cols):
     # Initialize the maze with walls ('X')
@@ -41,8 +38,10 @@ def generate_maze(rows, cols):
     start_x, start_y = 1, 1
     maze[start_x][start_y] = 'O'
     carve_path(start_x, start_y)
-
     remove_dead_ends(rows, cols, maze)
+
+    door_positions = add_portal_structure(rows, cols, maze, PORTAL_STRUCTURE_SIZE)
+    print("DP: ", door_positions)
     ensure_border_closed(rows, cols, maze)
 
     return maze
@@ -98,61 +97,81 @@ def add_zone(maze, enemy_x, enemy_y):
 
     return maze
 
-def get_tile_type(x, y, maze, tile_type):
-    # Determine tile type based on surrounding tiles and select a random sprite variation
-    up = maze[y - 1][x] if y > 0 else None
-    down = maze[y + 1][x] if y < len(maze) - 1 else None
-    left = maze[y][x - 1] if x > 0 else None
-    right = maze[y][x + 1] if x < len(maze[0]) - 1 else None
-
-    connections = {
-        'up': up == tile_type,
-        'down': down == tile_type,
-        'left': left == tile_type,
-        'right': right == tile_type
-    }
-
-    # Determine the type key based on connections
-    type_key = get_connection_type(connections)
-    if tile_type == 'X':
-        return random.choice(WALL_TILES[type_key])
-    elif tile_type == 'O':
-        return random.choice(PATH_TILES[type_key])
+def add_portal_structure(rows, cols, maze, dimension):
+    # Calculate sizes based on the dimension
+    wall_size = dimension + 2  # Wall boundary size
+    path_size = dimension + 4  # Path boundary size
     
-def generate_tiles(maze):
-    # Generates the correct tile sprites for the entire maze
-    tile_map = []
-    for y, row in enumerate(maze):
-        tile_row = []
-        for x, tile in enumerate(row):
-            tile_sprite = get_tile_type(x, y, maze, tile)
-            tile_row.append(tile_sprite)
-        tile_map.append(tile_row)
-    return tile_map
+    # Define possible structure positions
+    structure_positions = {
+        'top': (-1, cols // 2 - math.ceil(wall_size / 2)),
+        'bottom': (rows - (wall_size + 1), cols // 2 - math.ceil(wall_size / 2)),
+        'left': (rows // 2 - math.ceil(wall_size / 2), -1),
+        'right': (rows // 2 - math.ceil(wall_size / 2), cols - (wall_size + 1))
+    }
+    
+    selected_key = random.choice(list(structure_positions.keys()))
+    position = structure_positions[selected_key]
+    struct_x, struct_y = position
 
-def get_connection_type(connections):
-    # Mapping of connection combinations to their respective type keys
-    connection_map = {
-        (True, True, True, True): 'all_sides',
-        (True, True, False, False): 'up_down',
-        (False, False, True, True): 'left_right',
-        (True, False, False, True): 'up_right',
-        (True, False, True, False): 'up_left',
-        (False, True, False, True): 'down_right',
-        (False, True, True, False): 'down_left',
-        (True, True, False, True): 'up_right_down',
-        (True, True, True, False): 'up_left_down',
-        (True, False, True, True): 'up_left_right',
-        (False, True, True, True): 'down_left_right',
-        (True, False, False, False): 'only_up',
-        (False, False, False, True): 'only_right',
-        (False, True, False, False): 'only_down',
-        (False, False, True, False): 'only_left',
-        (False, False, False, False): 'no_sides',
+    # Create the path boundary
+    for i in range(struct_x, struct_x + path_size):
+        for j in range(struct_y, struct_y + path_size):
+            if 0 <= i < rows and 0 <= j < cols:
+                maze[i][j] = 'O'  # Initialize as path
+
+    # Create the wall boundary around the structure
+    for i in range(struct_x + 1, struct_x + (wall_size + 1)):
+        for j in range(struct_y + 1, struct_y + (wall_size + 1)):
+            if (i == struct_x + 1 or i == struct_x + wall_size or
+                j == struct_y + 1 or j == struct_y + wall_size):
+                maze[i][j] = 'X'  # Wall boundary
+
+    # Create the structure in the center
+    for i in range(struct_x + 2, struct_x + wall_size):
+        for j in range(struct_y + 2, struct_y + wall_size):
+            maze[i][j] = 'S'  # Structure path
+
+    # Define door and portal positions based on the selected key
+    door_positions = []
+    door_position_map = {
+        'top': (struct_x + wall_size, range(struct_y + 2, struct_y + wall_size)),
+        'bottom': (struct_x + 1, range(struct_y + 2, struct_y + wall_size)),
+        'left': (range(struct_x + 2, struct_x + wall_size), struct_y + wall_size),
+        'right': (range(struct_x + 2, struct_x + wall_size), struct_y + 1)
     }
 
-    # Create a tuple of the connection values
-    connection_tuple = (connections['up'], connections['down'], connections['left'], connections['right'])
+    portal_position_map = {
+        'top': (struct_x + dimension, range(struct_y + 2, struct_y + wall_size)),
+        'bottom': (struct_x + dimension, range(struct_y + 2, struct_y + wall_size)),
+        'left': (range(struct_x + 2, struct_x + wall_size), struct_y + dimension),
+        'right': (range(struct_x + 2, struct_x + wall_size), struct_y + dimension)
+    }
 
-    # Get the type key from the mapping
-    return connection_map.get(connection_tuple, 'unknown')  # Default to 'unknown' if not found
+    # Create door and portal using the combined function
+    def create_structure(structure_type, position_info):
+        row, col = position_info
+        if isinstance(row, int):  # For top and bottom structures
+            for j in col:
+                maze[row][j] = structure_type
+                if structure_type == 'DL':
+                    door_positions.append((row, j))
+        else:  # For left and right structures
+            for i in row:
+                maze[i][col] = structure_type
+                if structure_type == 'DL':
+                    door_positions.append((i, col))
+
+    # Create door and portal using the combined function
+    create_structure('DL', door_position_map[selected_key])  # Create door
+    create_structure('P', portal_position_map[selected_key])  # Create portal
+
+    return door_positions
+
+def toggle_door(maze, door_positions):
+    # Toggle the state of all doors between locked and unlocked
+    for pos in door_positions:
+        if maze[pos[0]][pos[1]] == 'DL':
+            maze[pos[0]][pos[1]] = 'DU'  # Unlock the door
+        elif maze[pos[0]][pos[1]] == 'DU':
+            maze[pos[0]][pos[1]] = 'DL'  # Lock the door

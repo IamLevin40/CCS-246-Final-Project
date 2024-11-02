@@ -6,6 +6,7 @@ import pygame
 WIDTH, HEIGHT = 800, 600
 TILE_SIZE = 16  # Size of each tile in pixels
 ROWS, COLS = 33, 33
+PORTAL_STRUCTURE_SIZE = 3
 
 # Colors
 PATH_COLOR = (10, 10, 10)

@@ -60,7 +60,7 @@ class EnemyAI:
             neighbors = [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)]
 
             for nx, ny in neighbors:
-                if 0 <= nx < len(maze[0]) and 0 <= ny < len(maze) and maze[ny][nx] != 'X':
+                if 0 <= nx < len(maze[0]) and 0 <= ny < len(maze) and (maze[ny][nx] != 'X' and maze[ny][nx] != 'S' and maze[ny][nx] != 'P'):
                     temp_g_score = g_score[current] + 1
 
                     if temp_g_score < g_score.get((nx, ny), float('inf')):
@@ -142,7 +142,7 @@ class Feigner(EnemyAI):
     def get_random_distant_target(self, player_pos, maze):
         while True:
             rand_x, rand_y = random.randint(0, len(maze[0]) - 1), random.randint(0, len(maze) - 1)
-            if maze[rand_y][rand_x] != 'X' and self.heuristic(rand_x, rand_y, player_pos[0], player_pos[1]) > self.distance_target_from_player:
+            if maze[rand_y][rand_x] != 'X' and self.heuristic(rand_x, rand_y, player_pos[0], player_pos[1]) < self.distance_target_from_player:
                 return (rand_x, rand_y)
 
     def move(self, player_pos, maze, delta_time):

@@ -22,6 +22,7 @@ class Player:
         self.float_y = y
         self.start_pos = (x, y)
         self.target_pos = (x, y)
+        self.current_tile = ''
         self.is_moving = False
         self.elapsed_time = 0
 
@@ -39,18 +40,19 @@ class Player:
                 # Initialize movement state
                 self.start_pos = (self.float_x, self.float_y)
                 self.target_pos = (new_x, new_y)
+                self.current_tile = maze[new_y][new_x]
                 self.is_moving = True
                 self.elapsed_time = 0  # Reset time elapsed
 
                 # Set animation state based on direction
-                if dx == 1:
-                    self.current_state = "right"
-                elif dx == -1:
-                    self.current_state = "left"
-                elif dy == -1:
+                if dy == -1:
                     self.current_state = "up"
                 elif dy == 1:
                     self.current_state = "down"
+                elif dx == -1:
+                    self.current_state = "left"
+                elif dx == 1:
+                    self.current_state = "right"
 
     def update_position(self, delta_time):
         if self.is_moving:

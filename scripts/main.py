@@ -5,6 +5,7 @@ from settings import *
 from player import Player
 from enemy import *
 from maze import *
+from tilemap import *
 from camera import Camera
 
 def draw_maze(maze, camera, tile_map):
