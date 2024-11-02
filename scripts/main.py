@@ -1,9 +1,9 @@
 # main.py
 
-import pygame, random
+import pygame, random, inspect
 from settings import *
 from player import Player
-from enemy import EnemyAI
+from enemy import *
 from maze import *
 from camera import Camera
 
@@ -58,20 +58,43 @@ def start_mechanics():
     player_start_y = COLS // 2
     player = Player(player_start_x, player_start_y, INIT_SPEED_PLAYER)
 
-    # Enemy spawns in the center of the enemy safe zone
-    enemy_start_x = random.choice([1, ROWS - 4])  # Center of safe zone
-    enemy_start_y = random.choice([1, COLS - 4])
-    enemy = EnemyAI(enemy_start_x, enemy_start_y, INIT_SPEED_ENEMY)
+    # Dictionary mapping enemy type names to their classes
+    ENEMY_CLASSES = {
+        "pursuer": Pursuer,
+        "feigner": Feigner,
+        "glimmer": Glimmer,
+        "ambusher": Ambusher
+    }
+    enemies = ENEMY_DEFAULT_LIST
+    random.shuffle(ENEMY_CHOICES)
+    enemies.extend(ENEMY_CHOICES[:MAX_RANDOM_ENEMIES])  # Add two randomly selected enemy types
 
+    enemy_objects = []
     maze = generate_maze(ROWS, COLS)
-    maze = add_zone(maze, enemy_start_x, enemy_start_y)
-    tile_map = generate_tiles(maze)
+    used_positions = set()  # Set to track used (x, y) coordinates
 
+    # Instantiate each enemy and add a safe zone for them in the maze
+    for enemy_type in enemies:
+        enemy_x, enemy_y = None, None
+        # Find a unique position for each enemy
+        while True:
+            enemy_x = random.choice([1, ROWS - 4])
+            enemy_y = random.choice([1, COLS - 4])
+            if (enemy_x, enemy_y) not in used_positions:
+                used_positions.add((enemy_x, enemy_y))
+                break  # Exit loop once we find a unique position
+
+        maze = add_zone(maze, enemy_x, enemy_y)  # Add safe zone for the enemy
+        enemy_class = ENEMY_CLASSES[enemy_type]
+        enemy_objects.append(enemy_class(enemy_x, enemy_y, enemy_type))
+
+    tile_map = generate_tiles(maze)
     camera = Camera(WIDTH, HEIGHT)
-    return player, enemy, maze, tile_map, camera
+
+    return player, enemy_objects, maze, tile_map, camera
 
 def game_loop():
-    player, enemy, maze, tile_map, camera = start_mechanics()   # Start summoning player and enemies
+    player, enemy_objects, maze, tile_map, camera = start_mechanics()   # Start summoning player and enemies
     running = True
     while running:
         delta_time = clock.tick(FPS) / 1000.0  # Convert to seconds
@@ -92,15 +115,20 @@ def game_loop():
 
         # Update player and enemy with time delta
         player.update_position(delta_time)
-        enemy.move((player.x, player.y), maze, delta_time)
-
+        for enemy in enemy_objects:
+            params = inspect.signature(enemy.move).parameters
+            if 'player_direction' in params:
+                enemy.move((player.x, player.y), player.current_state, maze, delta_time)
+            else:
+                enemy.move((player.x, player.y), maze, delta_time)
         camera.follow((player.x, player.y), delta_time)
 
         WIN.fill(PATH_COLOR)
         draw_maze(maze, camera, tile_map)
         
         player.draw(WIN, camera)
-        enemy.draw(WIN, camera)
+        for enemy in enemy_objects:
+            enemy.draw(WIN, camera)
         pygame.display.update()
 
     pygame.quit()

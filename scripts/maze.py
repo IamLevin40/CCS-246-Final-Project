@@ -33,25 +33,32 @@ def generate_maze(rows, cols):
                 maze[x + dx // 2][y + dy // 2] = 'O'  # Carve out path in between
                 carve_path(nx, ny)  # Recur for the next cell
 
+                # Add extra connections randomly to create multiple paths
+                if random.random() < 0.4:
+                    additional_connection(x, y, rows, cols, maze)
+
     # Start carving from a central cell
     start_x, start_y = 1, 1
     maze[start_x][start_y] = 'O'
     carve_path(start_x, start_y)
 
-    # Remove dead-ends by adding extra paths where needed
     remove_dead_ends(rows, cols, maze)
-
-    # Further ensure no accidental border openings by checking the edges again
-    for i in range(rows):
-        maze[i][0] = 'X'
-        maze[i][cols - 1] = 'X'
-    for j in range(cols):
-        maze[0][j] = 'X'
-        maze[rows - 1][j] = 'X'
+    ensure_border_closed(rows, cols, maze)
 
     return maze
 
+def additional_connection(x, y, rows, cols, maze):
+    directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+    random.shuffle(directions)
+
+    for dx, dy in directions:
+        nx, ny = x + dx, y + dy
+        if 1 <= nx < rows - 1 and 1 <= ny < cols - 1 and maze[nx][ny] == 'X':
+            maze[nx][ny] = 'O'
+            break
+
 def remove_dead_ends(rows, cols, maze):
+    # Remove dead-ends by adding extra paths where needed
     for i in range(1, rows - 1):
         for j in range(1, cols - 1):
             if maze[i][j] == 'O':
@@ -66,6 +73,15 @@ def remove_dead_ends(rows, cols, maze):
                             maze[nx][ny] = 'O'
                             maze[i + dx // 2][j + dy // 2] = 'O'
                             break
+
+def ensure_border_closed(rows, cols, maze):
+    # Further ensure no accidental border openings by checking the edges again
+    for i in range(rows):
+        maze[i][0] = 'X'
+        maze[i][cols - 1] = 'X'
+    for j in range(cols):
+        maze[0][j] = 'X'
+        maze[rows - 1][j] = 'X'
 
 def add_zone(maze, enemy_x, enemy_y):
     # Zone for the player (center of the maze)
