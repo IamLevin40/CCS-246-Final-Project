@@ -7,9 +7,14 @@ from utils import split_and_resize_sprite
 
 class EnemyAI:
     def __init__(self, x, y, enemy_type):
-        self.x = x
-        self.y = y
+        self.x, self.y = x, y
         self.enemy_type = enemy_type
+
+        self.float_x, self.float_y = x, y
+        self.start_pos = (x, y)
+        self.target_pos = (x, y)
+        self.is_moving = False
+        self.elapsed_time = 0
         
         # Load speed and animations from ENEMIES dictionary
         self.speed = ENEMIES[enemy_type]["speed"]
@@ -23,14 +28,6 @@ class EnemyAI:
         self.frame_index = 0
         self.animation_timer = 0
         self.animation_speed = 0.1  # Time per frame in seconds
-
-        # Store floating-point positions
-        self.float_x = x
-        self.float_y = y
-        self.start_pos = (x, y)
-        self.target_pos = (x, y)
-        self.is_moving = False
-        self.elapsed_time = 0
 
         self.rect = pygame.Rect(self.x * TILE_SIZE, self.y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
 
@@ -142,7 +139,7 @@ class Feigner(EnemyAI):
     def get_random_distant_target(self, player_pos, maze):
         while True:
             rand_x, rand_y = random.randint(0, len(maze[0]) - 1), random.randint(0, len(maze) - 1)
-            if maze[rand_y][rand_x] != 'X' and self.heuristic(rand_x, rand_y, player_pos[0], player_pos[1]) < self.distance_target_from_player:
+            if maze[rand_y][rand_x] == 'O' and self.heuristic(rand_x, rand_y, player_pos[0], player_pos[1]) < self.distance_target_from_player:
                 return (rand_x, rand_y)
 
     def move(self, player_pos, maze, delta_time):
@@ -171,7 +168,7 @@ class Glimmer(EnemyAI):
     def get_random_distant_target(self, player_pos, maze):
         while True:
             rand_x, rand_y = random.randint(0, len(maze[0]) - 1), random.randint(0, len(maze) - 1)
-            if maze[rand_y][rand_x] != 'X' and self.heuristic(rand_x, rand_y, player_pos[0], player_pos[1]) > self.distance_target_from_player:
+            if maze[rand_y][rand_x] == 'O' and self.heuristic(rand_x, rand_y, player_pos[0], player_pos[1]) > self.distance_target_from_player:
                 return (rand_x, rand_y)
 
     def move(self, player_pos, maze, delta_time):
@@ -206,7 +203,7 @@ class Ambusher(EnemyAI):
 
         # Ensure target is within maze bounds and not a wall
         target_x, target_y = target
-        if 0 <= target_x < len(maze[0]) and 0 <= target_y < len(maze) and maze[target_y][target_x] != 'X':
+        if 0 <= target_x < len(maze[0]) and 0 <= target_y < len(maze) and maze[target_y][target_x] == 'O':
             super().move(target, maze, delta_time)
         else:
             # Fallback: if the tile is outside bounds or blocked, target the player's position

@@ -6,25 +6,25 @@ from utils import *
 
 class Player:
     def __init__(self, x, y, speed):
-        self.x = x
-        self.y = y
+        self.x, self.y = x, y
         self.speed = speed
-        
-        # Load animations for each state
-        self.animations = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in PLAYER_SPRITES.items()}
-        self.current_state = "rest"  # Start in resting state
-        self.frame_index = 0
-        self.animation_timer = 0
-        self.animation_speed = 0.1  # Time per frame in seconds
 
-        # Current, start, and target positions
-        self.float_x = x
-        self.float_y = y
+        self.float_x, self.float_y = x, y
         self.start_pos = (x, y)
         self.target_pos = (x, y)
         self.current_tile = ''
         self.is_moving = False
         self.elapsed_time = 0
+        
+        # Load animations for each state
+        self.animations = {
+            state: split_and_resize_sprite(path, TILE_SIZE) 
+            for state, path in PLAYER_SPRITES.items()
+        }
+        self.current_state = "rest"  # Start in resting state
+        self.frame_index = 0
+        self.animation_timer = 0
+        self.animation_speed = 0.1  # Time per frame in seconds
 
         # Player rectangle for rendering
         self.rect = pygame.Rect(self.x * TILE_SIZE, self.y * TILE_SIZE, TILE_SIZE, TILE_SIZE)

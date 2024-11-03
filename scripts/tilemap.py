@@ -1,33 +1,31 @@
-# tilemap.py
-
-import random
+import pygame, random
 from settings import *
 from utils import *
 
 PATH_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in PATH_TILE_SPRITES.items()}
 WALL_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in WALL_TILE_SPRITES.items()}
 
-def get_tile_type(x, y, maze, tile_type):
-    # Determine tile type based on surrounding tiles and select a random sprite variation
-    up = maze[y - 1][x] if y > 0 else None
-    down = maze[y + 1][x] if y < len(maze) - 1 else None
-    left = maze[y][x - 1] if x > 0 else None
-    right = maze[y][x + 1] if x < len(maze[0]) - 1 else None
+FOUR_DIRECTIONS = ['up', 'right', 'down', 'left']
+ALL_DIRECTIONS = ['up', 'up_right', 'right', 'down_right', 'down', 'down_left', 'left', 'up_left']
+connection_map = {
+    # Four-direction patterns
+    (True, False, False, False): 'side_end',
+    (True, False, True, False): 'adjacent',
+    (True, True, False, False): 'l_junction',
+    (True, True, True, False): 't_junction',
+    (True, True, True, True): 'cross',
+    (False, False, False, False): 'no_side',
+    # Eight-direction patterns
+    (True, True, True, False, False, False, False, False): 'edge',
+    (True, True, True, False, True, False, False, False): 'axe',
+    (True, True, True, True, True, False, False, False): 'rectangle',
+    (True, True, True, False, True, False, True, False): 'fish',
+    (True, True, True, True, True, False, True, False): 'chameleon',
+    (True, True, True, False, True, True, True, False): 'butterfly',
+    (True, True, True, True, True, True, True, False): 'one_twisted',
+    (True, True, True, True, True, True, True, True): 'all_sides',
+}
 
-    connections = {
-        'up': up == tile_type,
-        'down': down == tile_type,
-        'left': left == tile_type,
-        'right': right == tile_type
-    }
-
-    # Determine the type key based on connections
-    type_key = get_connection_type(connections)
-    if tile_type == 'X':
-        return random.choice(WALL_TILES[type_key])
-    elif tile_type == 'O':
-        return random.choice(PATH_TILES[type_key])
-    
 def generate_tiles(maze):
     # Generates the correct tile sprites for the entire maze
     tile_map = []
@@ -39,29 +37,89 @@ def generate_tiles(maze):
         tile_map.append(tile_row)
     return tile_map
 
-def get_connection_type(connections):
-    # Mapping of connection combinations to their respective type keys
-    connection_map = {
-        (True, True, True, True): 'all_sides',
-        (True, True, False, False): 'up_down',
-        (False, False, True, True): 'left_right',
-        (True, False, False, True): 'up_right',
-        (True, False, True, False): 'up_left',
-        (False, True, False, True): 'down_right',
-        (False, True, True, False): 'down_left',
-        (True, True, False, True): 'up_right_down',
-        (True, True, True, False): 'up_left_down',
-        (True, False, True, True): 'up_left_right',
-        (False, True, True, True): 'down_left_right',
-        (True, False, False, False): 'only_up',
-        (False, False, False, True): 'only_right',
-        (False, True, False, False): 'only_down',
-        (False, False, True, False): 'only_left',
-        (False, False, False, False): 'no_sides',
+def get_tile_type(x, y, maze, tile_type):
+    # Guarantee a four-direction pattern match first
+    connections_four = get_tile_connections(x, y, maze, tile_type, directions=FOUR_DIRECTIONS)
+    type_key_four, rotation_four = get_pattern_with_rotation(connections_four, use_all_directions=False)
+
+    # Check if the four-direction pattern key exists in the appropriate tile set
+    tile_sprite = None
+    if tile_type == 'X':
+        tile_sprite = random.choice(WALL_TILES[type_key_four])
+    elif tile_type == 'O':
+        tile_sprite = random.choice(PATH_TILES[type_key_four])
+
+    # Next, check for an eight-direction pattern to potentially replace the four-direction pattern
+    connections_eight = get_tile_connections(x, y, maze, tile_type, directions=ALL_DIRECTIONS)
+    type_key_eight, rotation_eight = get_pattern_with_rotation(connections_eight, use_all_directions=True)
+
+    # Update to eight-direction pattern if found in tile sets
+    if tile_type == 'X' and type_key_eight in WALL_TILES:
+        tile_sprite = random.choice(WALL_TILES[type_key_eight])
+        rotation_needed = rotation_eight
+    elif tile_type == 'O' and type_key_eight in PATH_TILES:
+        tile_sprite = random.choice(PATH_TILES[type_key_eight])
+        rotation_needed = rotation_eight
+    else:
+        # If no eight-direction pattern is found, use the four-direction pattern rotation
+        rotation_needed = rotation_four
+    
+    # Rotate the sprite as required by the calculated rotation
+    if tile_sprite is not None:
+        tile_sprite = pygame.transform.rotate(tile_sprite, rotation_needed)
+
+    return tile_sprite
+
+def get_tile_connections(x, y, maze, tile_type, directions):
+    connections = {}
+    for direction in directions:
+        dx, dy = get_offset(direction)
+        nx, ny = x + dx, y + dy
+        connections[direction] = (0 <= ny < len(maze) and 0 <= nx < len(maze[0]) and maze[ny][nx] == tile_type)
+    return connections
+
+def get_pattern_with_rotation(connections, use_all_directions=False):
+    # Generate connection pattern
+    pattern = tuple(connections[dir] for dir in (ALL_DIRECTIONS if use_all_directions else FOUR_DIRECTIONS))
+    
+    # Try to match the pattern or any of its rotations in the connection map
+    for i, (rotated_pattern, rotation_degrees) in enumerate(get_rotations(pattern, use_all_directions)):
+        if rotated_pattern in connection_map:
+            return connection_map[rotated_pattern], rotation_degrees
+
+    # Return 'unknown' if no pattern matches, with no rotation
+    return 'unknown', 0
+
+def get_rotations(pattern, use_all_directions):
+    # Generate all rotations of the pattern and corresponding rotation angles in degrees
+    rotation_count = 4 if not use_all_directions else 8
+    rotations = []
+    current_pattern = pattern
+
+    for i in range(1, rotation_count + 1):
+        # Calculate the rotation in degrees based on the iteration (90 degrees per rotation)
+        rotation_degrees = i * 90
+        current_pattern = rotate_pattern(current_pattern, use_all_directions)
+        rotations.append((current_pattern, rotation_degrees))
+    
+    return rotations
+
+def rotate_pattern(pattern, use_all_directions):
+    # Rotate the pattern to simulate a 90-degree
+    if use_all_directions:
+        return pattern[-2:] + pattern[:-2]  # Rotate by one position in all directions
+    else:
+        return pattern[-1:] + pattern[:-1]  # Rotate by one position in four directions
+
+def get_offset(direction):
+    offsets = {
+        'up': (0, -1),
+        'up_right': (1, -1),
+        'right': (1, 0),
+        'down_right': (1, 1),
+        'down': (0, 1),
+        'down_left': (-1, 1),
+        'left': (-1, 0),
+        'up_left': (-1, -1)
     }
-
-    # Create a tuple of the connection values
-    connection_tuple = (connections['up'], connections['down'], connections['left'], connections['right'])
-
-    # Get the type key from the mapping
-    return connection_map.get(connection_tuple, 'unknown')  # Default to 'unknown' if not found
+    return offsets[direction]

@@ -59,41 +59,41 @@ GLIMMER_SPRITES = {
 }
 
 PATH_TILE_SPRITES = {
+    # Four-direction patterns
+    "side_end": "sprites/path_tiles/all_sides.png",
+    "adjacent": "sprites/path_tiles/all_sides.png",
+    "l_junction": "sprites/path_tiles/all_sides.png",
+    "t_junction": "sprites/path_tiles/all_sides.png",
+    "cross": "sprites/path_tiles/all_sides.png",
+    "no_side": "sprites/path_tiles/all_sides.png",
+    # Eight-direction patterns
+    "edge": "sprites/path_tiles/all_sides.png",
+    "axe": "sprites/path_tiles/all_sides.png",
+    "rectangle": "sprites/path_tiles/all_sides.png",
+    "fish": "sprites/path_tiles/all_sides.png",
+    "chameleon": "sprites/path_tiles/all_sides.png",
+    "butterfly": "sprites/path_tiles/all_sides.png",
+    "one_twisted": "sprites/path_tiles/all_sides.png",
     "all_sides": "sprites/path_tiles/all_sides.png",
-    "up_down": "sprites/path_tiles/all_sides.png",
-    "left_right": "sprites/path_tiles/all_sides.png",
-    "up_right": "sprites/path_tiles/all_sides.png",
-    "up_left": "sprites/path_tiles/all_sides.png",
-    "down_right": "sprites/path_tiles/all_sides.png",
-    "down_left": "sprites/path_tiles/all_sides.png",
-    "up_right_down": "sprites/path_tiles/all_sides.png",
-    "up_left_down": "sprites/path_tiles/all_sides.png",
-    "up_left_right": "sprites/path_tiles/all_sides.png",
-    "down_left_right": "sprites/path_tiles/all_sides.png",
-    "only_up": "sprites/path_tiles/all_sides.png",
-    "only_right": "sprites/path_tiles/all_sides.png",
-    "only_down": "sprites/path_tiles/all_sides.png",
-    "only_left": "sprites/path_tiles/all_sides.png",
-    "no_sides": "sprites/path_tiles/all_sides.png",
 }
 
 WALL_TILE_SPRITES = {
+    # Four-direction patterns
+    "side_end": "sprites/wall_tiles/side_end.png",
+    "adjacent": "sprites/wall_tiles/adjacent.png",
+    "l_junction": "sprites/wall_tiles/l_junction.png",
+    "t_junction": "sprites/wall_tiles/t_junction.png",
+    "cross": "sprites/wall_tiles/cross.png",
+    "no_side": "sprites/wall_tiles/no_side.png",
+    # Eight-direction patterns
+    "edge": "sprites/wall_tiles/edge.png",
+    "axe": "sprites/wall_tiles/axe.png",
+    "rectangle": "sprites/wall_tiles/rectangle.png",
+    "fish": "sprites/wall_tiles/fish.png",
+    "chameleon": "sprites/wall_tiles/chameleon.png",
+    "butterfly": "sprites/wall_tiles/butterfly.png",
+    "one_twisted": "sprites/wall_tiles/one_twisted.png",
     "all_sides": "sprites/wall_tiles/all_sides.png",
-    "up_down": "sprites/wall_tiles/up_down.png",
-    "left_right": "sprites/wall_tiles/left_right.png",
-    "up_right": "sprites/wall_tiles/up_right.png",
-    "up_left": "sprites/wall_tiles/up_left.png",
-    "down_right": "sprites/wall_tiles/down_right.png",
-    "down_left": "sprites/wall_tiles/down_left.png",
-    "up_right_down": "sprites/wall_tiles/up_right_down.png",
-    "up_left_down": "sprites/wall_tiles/up_left_down.png",
-    "up_left_right": "sprites/wall_tiles/up_left_right.png",
-    "down_left_right": "sprites/wall_tiles/down_left_right.png",
-    "only_up": "sprites/wall_tiles/only_up.png",
-    "only_right": "sprites/wall_tiles/only_right.png",
-    "only_down": "sprites/wall_tiles/only_down.png",
-    "only_left": "sprites/wall_tiles/only_left.png",
-    "no_sides": "sprites/wall_tiles/no_sides.png",
 }
 
 # Initial attributes
