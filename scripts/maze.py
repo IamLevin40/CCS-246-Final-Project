@@ -41,10 +41,9 @@ def generate_maze(rows, cols):
     remove_dead_ends(rows, cols, maze)
 
     door_positions = add_portal_structure(rows, cols, maze, PORTAL_STRUCTURE_SIZE)
-    print("DP: ", door_positions)
     ensure_border_closed(rows, cols, maze)
 
-    return maze
+    return maze, door_positions
 
 def additional_connection(x, y, rows, cols, maze):
     directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
@@ -130,7 +129,7 @@ def add_portal_structure(rows, cols, maze, dimension):
     # Create the structure in the center
     for i in range(struct_x + 2, struct_x + wall_size):
         for j in range(struct_y + 2, struct_y + wall_size):
-            maze[i][j] = 'S'  # Structure path
+            maze[i][j] = 'S'  # Structure floor
 
     # Define door and portal positions based on the selected key
     door_positions = []
@@ -168,10 +167,12 @@ def add_portal_structure(rows, cols, maze, dimension):
 
     return door_positions
 
-def toggle_door(maze, door_positions):
+def toggle_door(maze, door_positions, toggler):
     # Toggle the state of all doors between locked and unlocked
+    toggles = {
+        'locked': 'DL',
+        'unlocked': 'DU',
+        'incorrect': 'DI'
+    }
     for pos in door_positions:
-        if maze[pos[0]][pos[1]] == 'DL':
-            maze[pos[0]][pos[1]] = 'DU'  # Unlock the door
-        elif maze[pos[0]][pos[1]] == 'DU':
-            maze[pos[0]][pos[1]] = 'DL'  # Lock the door
+        maze[pos[0]][pos[1]] = toggles[toggler]

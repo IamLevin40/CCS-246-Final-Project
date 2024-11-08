@@ -3,11 +3,15 @@
 import pygame
 from settings import *
 from utils import *
+from key import *
 
 class Player:
     def __init__(self, x, y, speed):
         self.x, self.y = x, y
         self.speed = speed
+        self.has_key = False
+        self.key_is_real = False
+        self.maze_interaction_triggered = False
 
         self.float_x, self.float_y = x, y
         self.start_pos = (x, y)
@@ -36,7 +40,7 @@ class Player:
             new_y = self.y + dy
 
             # Check if the new target position is walkable
-            if maze[new_y][new_x] != 'X':
+            if (maze[new_y][new_x] != 'X' and maze[new_y][new_x] != 'DL'):
                 # Initialize movement state
                 self.start_pos = (self.float_x, self.float_y)
                 self.target_pos = (new_x, new_y)
@@ -54,7 +58,7 @@ class Player:
                 elif dx == 1:
                     self.current_state = "right"
 
-    def update_position(self, delta_time):
+    def update_position(self, delta_time, door_positions, keys, maze):        
         if self.is_moving:
             # Increment elapsed time
             self.elapsed_time += delta_time
@@ -72,6 +76,10 @@ class Player:
         # Update rect for rendering
         self.rect.topleft = (int(self.float_x * TILE_SIZE), int(self.float_y * TILE_SIZE))
         self.update_frame(delta_time)
+
+        # Check for key collection and door
+        check_key_collection(self, keys)
+        check_door_unlock(self, door_positions, maze)
     
     def update_frame(self, delta_time):
         self.animation_timer += delta_time

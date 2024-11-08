@@ -1,9 +1,15 @@
+# tilemap.py
+
 import pygame, random
 from settings import *
 from utils import *
 
 PATH_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in PATH_TILE_SPRITES.items()}
 WALL_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in WALL_TILE_SPRITES.items()}
+DOOR_LOCKED_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in DOOR_LOCKED_TILE_SPRITES.items()}
+DOOR_UNLOCKED_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in DOOR_UNLOCKED_TILE_SPRITES.items()}
+STRUCTURE_FLOOR_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in STRUCTURE_FLOOR_TILE_SPRITES.items()}
+STRUCTURE_PORTAL_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in STRUCTURE_PORTAL_TILE_SPRITES.items()}
 
 FOUR_DIRECTIONS = ['up', 'right', 'down', 'left']
 ALL_DIRECTIONS = ['up', 'up_right', 'right', 'down_right', 'down', 'down_left', 'left', 'up_left']
@@ -17,6 +23,7 @@ connection_map = {
     (False, False, False, False): 'no_side',
     # Eight-direction patterns
     (True, True, True, False, False, False, False, False): 'edge',
+    (True, False, True, True, True, False, False, False): 'violin',
     (True, True, True, False, True, False, False, False): 'axe',
     (True, True, True, True, True, False, False, False): 'rectangle',
     (True, True, True, False, True, False, True, False): 'fish',
@@ -48,6 +55,14 @@ def get_tile_type(x, y, maze, tile_type):
         tile_sprite = random.choice(WALL_TILES[type_key_four])
     elif tile_type == 'O':
         tile_sprite = random.choice(PATH_TILES[type_key_four])
+    elif tile_type == 'DL':
+        tile_sprite = random.choice(DOOR_LOCKED_TILES[type_key_four])
+    elif tile_type == 'DU':
+        tile_sprite = random.choice(DOOR_UNLOCKED_TILES[type_key_four])
+    elif tile_type == 'S':
+        tile_sprite = random.choice(STRUCTURE_FLOOR_TILES[type_key_four])
+    elif tile_type == 'P':
+        tile_sprite = random.choice(STRUCTURE_PORTAL_TILES[type_key_four])
 
     # Next, check for an eight-direction pattern to potentially replace the four-direction pattern
     connections_eight = get_tile_connections(x, y, maze, tile_type, directions=ALL_DIRECTIONS)

@@ -68,6 +68,7 @@ PATH_TILE_SPRITES = {
     "no_side": "sprites/path_tiles/all_sides.png",
     # Eight-direction patterns
     "edge": "sprites/path_tiles/all_sides.png",
+    "violin": "sprites/path_tiles/all_sides.png",
     "axe": "sprites/path_tiles/all_sides.png",
     "rectangle": "sprites/path_tiles/all_sides.png",
     "fish": "sprites/path_tiles/all_sides.png",
@@ -87,6 +88,7 @@ WALL_TILE_SPRITES = {
     "no_side": "sprites/wall_tiles/no_side.png",
     # Eight-direction patterns
     "edge": "sprites/wall_tiles/edge.png",
+    "violin": "sprites/wall_tiles/violin.png",
     "axe": "sprites/wall_tiles/axe.png",
     "rectangle": "sprites/wall_tiles/rectangle.png",
     "fish": "sprites/wall_tiles/fish.png",
@@ -94,6 +96,35 @@ WALL_TILE_SPRITES = {
     "butterfly": "sprites/wall_tiles/butterfly.png",
     "one_twisted": "sprites/wall_tiles/one_twisted.png",
     "all_sides": "sprites/wall_tiles/all_sides.png",
+}
+
+KEY_SPRITES = {
+    "real": "sprites/keys/real.png",
+    "fake": "sprites/keys/fake.png"
+}
+
+DOOR_LOCKED_TILE_SPRITES = {
+    "side_end": "sprites/door_tiles/locked/side_end.png",
+    "adjacent": "sprites/door_tiles/locked/adjacent.png"
+}
+
+DOOR_UNLOCKED_TILE_SPRITES = {
+    "side_end": "sprites/door_tiles/unlocked/side_end.png",
+    "adjacent": "sprites/door_tiles/unlocked/adjacent.png"
+}
+
+STRUCTURE_FLOOR_TILE_SPRITES = {
+    "side_end": "sprites/structure_tiles/floor/all_sides.png",
+    "adjacent": "sprites/structure_tiles/floor/all_sides.png",
+    "l_junction": "sprites/structure_tiles/floor/all_sides.png",
+    "t_junction": "sprites/structure_tiles/floor/all_sides.png",
+    "cross": "sprites/structure_tiles/floor/all_sides.png",
+    "no_side": "sprites/structure_tiles/floor/all_sides.png"
+}
+
+STRUCTURE_PORTAL_TILE_SPRITES = {
+    "side_end": "sprites/structure_tiles/portal/side_end.png",
+    "adjacent": "sprites/structure_tiles/portal/adjacent.png"
 }
 
 # Initial attributes

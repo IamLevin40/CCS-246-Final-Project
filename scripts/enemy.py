@@ -57,7 +57,7 @@ class EnemyAI:
             neighbors = [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)]
 
             for nx, ny in neighbors:
-                if 0 <= nx < len(maze[0]) and 0 <= ny < len(maze) and (maze[ny][nx] != 'X' and maze[ny][nx] != 'S' and maze[ny][nx] != 'P'):
+                if 0 <= nx < len(maze[0]) and 0 <= ny < len(maze) and (maze[ny][nx] != 'X' and maze[ny][nx] != 'S' and maze[ny][nx] != 'P' and maze[ny][nx] != 'DL' and maze[ny][nx] != 'DU'):
                     temp_g_score = g_score[current] + 1
 
                     if temp_g_score < g_score.get((nx, ny), float('inf')):
@@ -105,6 +105,7 @@ class EnemyAI:
 
         # Update rect for rendering
         self.rect.topleft = (int(self.float_x * TILE_SIZE), int(self.float_y * TILE_SIZE))
+        self.update_frame(delta_time)
 
     def update_frame(self, delta_time):
         self.animation_timer += delta_time
