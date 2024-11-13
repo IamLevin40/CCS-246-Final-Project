@@ -103,14 +103,19 @@ KEY_SPRITES = {
     "fake": "sprites/keys/fake.png"
 }
 
-DOOR_LOCKED_TILE_SPRITES = {
-    "side_end": "sprites/door_tiles/locked/side_end.png",
-    "adjacent": "sprites/door_tiles/locked/adjacent.png"
-}
-
-DOOR_UNLOCKED_TILE_SPRITES = {
-    "side_end": "sprites/door_tiles/unlocked/side_end.png",
-    "adjacent": "sprites/door_tiles/unlocked/adjacent.png"
+DOOR_TILE_SPRITES = {
+    "locked": {
+        "side_end": "sprites/structure_tiles/door/locked/side_end.png",
+        "adjacent": "sprites/structure_tiles/door/locked/adjacent.png"
+    },
+    "unlocked": {
+        "side_end": "sprites/structure_tiles/door/unlocked/side_end.png",
+        "adjacent": "sprites/structure_tiles/door/unlocked/adjacent.png"
+    },
+    "incorrect": {
+        "side_end": "sprites/structure_tiles/door/incorrect/side_end.png",
+        "adjacent": "sprites/structure_tiles/door/incorrect/adjacent.png"
+    }
 }
 
 STRUCTURE_FLOOR_TILE_SPRITES = {
@@ -129,7 +134,6 @@ STRUCTURE_PORTAL_TILE_SPRITES = {
 
 # Initial attributes
 INIT_SPEED_PLAYER = 7.2
-MAX_RANDOM_ENEMIES = 2  # Excludes pursuer
 ENEMIES = {
     "pursuer": {
         "speed": 6.0,
@@ -148,7 +152,7 @@ ENEMIES = {
         "sprites": AMBUSHER_SPRITES
     }
 }
-
+MAX_ENEMIES = 3  # Excludes default
 ENEMY_DEFAULT_LIST = ["pursuer"]
 ENEMY_CHOICES = ["feigner", "glimmer", "ambusher"]
 

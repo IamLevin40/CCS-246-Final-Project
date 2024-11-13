@@ -1,12 +1,12 @@
 # key.py
 
-import random
-import math
+import pygame, random, math, time
 from settings import *
 from utils import *
 from maze import *
 
 KEY_OBJECTS = {state: split_and_resize_sprite(path, TILE_SIZE)[0] for state, path in KEY_SPRITES.items()}
+DOOR_LOCK_EVENT = pygame.USEREVENT + 1
 
 class Key:
     def __init__(self, x, y, is_real):
@@ -56,6 +56,10 @@ def check_door_unlock(player, door_positions, maze):
             if abs(player.x - door_x) + abs(player.y - door_y) == 1:  # Near the door
                 if player.key_is_real:
                     toggle_door(maze, door_positions, 'unlocked')
+                else:
+                    toggle_door(maze, door_positions, 'incorrect')
+                    pygame.time.set_timer(DOOR_LOCK_EVENT, 2500)
+                    
                 # Remove the key regardless of its authenticity
                 player.has_key = False
                 player.key_is_real = False

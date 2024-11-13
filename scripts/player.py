@@ -12,6 +12,7 @@ class Player:
         self.has_key = False
         self.key_is_real = False
         self.maze_interaction_triggered = False
+        self.is_immune = False
 
         self.float_x, self.float_y = x, y
         self.start_pos = (x, y)
@@ -40,7 +41,7 @@ class Player:
             new_y = self.y + dy
 
             # Check if the new target position is walkable
-            if (maze[new_y][new_x] != 'X' and maze[new_y][new_x] != 'DL'):
+            if maze[new_y][new_x] not in {'X', 'DL', 'DI'}:
                 # Initialize movement state
                 self.start_pos = (self.float_x, self.float_y)
                 self.target_pos = (new_x, new_y)

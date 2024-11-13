@@ -6,8 +6,11 @@ from utils import *
 
 PATH_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in PATH_TILE_SPRITES.items()}
 WALL_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in WALL_TILE_SPRITES.items()}
-DOOR_LOCKED_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in DOOR_LOCKED_TILE_SPRITES.items()}
-DOOR_UNLOCKED_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in DOOR_UNLOCKED_TILE_SPRITES.items()}
+DOOR_TILES = {
+    state: {pattern: split_and_resize_sprite(path, TILE_SIZE) 
+            for pattern, path in patterns.items()}
+    for state, patterns in DOOR_TILE_SPRITES.items()
+}
 STRUCTURE_FLOOR_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in STRUCTURE_FLOOR_TILE_SPRITES.items()}
 STRUCTURE_PORTAL_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in STRUCTURE_PORTAL_TILE_SPRITES.items()}
 
@@ -55,10 +58,14 @@ def get_tile_type(x, y, maze, tile_type):
         tile_sprite = random.choice(WALL_TILES[type_key_four])
     elif tile_type == 'O':
         tile_sprite = random.choice(PATH_TILES[type_key_four])
-    elif tile_type == 'DL':
-        tile_sprite = random.choice(DOOR_LOCKED_TILES[type_key_four])
-    elif tile_type == 'DU':
-        tile_sprite = random.choice(DOOR_UNLOCKED_TILES[type_key_four])
+    elif tile_type in ['DL', 'DU', 'DI']:
+        door_state = {
+            'DL': 'locked',
+            'DU': 'unlocked',
+            'DI': 'incorrect'
+        }.get(tile_type)
+        if door_state in DOOR_TILES:
+            tile_sprite = random.choice(DOOR_TILES[door_state][type_key_four])
     elif tile_type == 'S':
         tile_sprite = random.choice(STRUCTURE_FLOOR_TILES[type_key_four])
     elif tile_type == 'P':
