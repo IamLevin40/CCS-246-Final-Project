@@ -17,7 +17,7 @@ class EnemyAI:
         self.elapsed_time = 0
         
         # Load speed and animations from ENEMIES dictionary
-        self.speed = ENEMIES[enemy_type]["speed"]
+        self.speed = ENEMIES[enemy_type]["init_speed"]
         self.animations = {
             state: split_and_resize_sprite(path, TILE_SIZE)
             for state, path in ENEMIES[enemy_type]["sprites"].items()

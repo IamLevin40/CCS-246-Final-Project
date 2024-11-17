@@ -3,7 +3,7 @@
 import pygame
 
 # Display settings
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 960, 640
 TILE_SIZE = 16  # Size of each tile in pixels
 ROWS, COLS = 33, 33
 PORTAL_STRUCTURE_SIZE = 3
@@ -16,6 +16,8 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 DARK_GREEN = (50, 190, 50)
+FLOOR_BG_COLOR = (248, 24, 87)
+TIMER_BG_COLOR = (248, 199, 24)
 
 # Paths to sprite images
 PLAYER_SPRITES = {
@@ -133,22 +135,24 @@ STRUCTURE_PORTAL_TILE_SPRITES = {
 }
 
 # Initial attributes
+INIT_TIMER = 60
+INIT_MIN_BONUS_LIMIT = 20
 INIT_SPEED_PLAYER = 7.2
 ENEMIES = {
     "pursuer": {
-        "speed": 6.0,
+        "init_speed": 6.0,
         "sprites": PURSUER_SPRITES
     },
     "feigner": {
-        "speed": 6.0,
+        "init_speed": 6.0,
         "sprites": FEIGNER_SPRITES
     },
     "glimmer": {
-        "speed": 6.0,
+        "init_speed": 6.0,
         "sprites": GLIMMER_SPRITES
     },
     "ambusher": {
-        "speed": 6.0,
+        "init_speed": 6.0,
         "sprites": AMBUSHER_SPRITES
     }
 }

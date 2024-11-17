@@ -10,11 +10,16 @@ from key import *
 from tilemap import *
 from camera import Camera
 
-def start_mechanics():
+def start_mechanics(existing_player=None):
     # Player spawns in the center of the player safe zone
-    player_start_x = ROWS // 2
-    player_start_y = COLS // 2
-    player = Player(player_start_x, player_start_y, INIT_SPEED_PLAYER)
+    if existing_player:
+        player = existing_player
+        player.x, player.y = ROWS // 2, COLS // 2  # Reset player position
+        player.float_x, player.float_y = player.x, player.y
+        player.target_pos = (player.x, player.y)
+    else:
+        # Player spawns in the center of the player safe zone
+        player = Player(ROWS // 2, COLS // 2, INIT_SPEED_PLAYER)
 
     # Dictionary mapping enemy type names to their classes
     ENEMY_CLASSES = {
@@ -77,6 +82,18 @@ def game_loop():
                 game_over = False
             continue
 
+        # Check if player is on 'P' tile to trigger level up after 2 seconds
+        if player.current_tile == 'P':
+            if player.floor_up_start_time is None:
+                player.floor_up_start_time = time.time()
+            elif time.time() - player.floor_up_start_time >= 1:
+                player.floor_up()
+                player, enemy_objects, maze, door_positions, keys, camera = start_mechanics(player)
+                tile_map = generate_tiles(maze)
+                player.current_tile == ''
+        else:
+            player.floor_up_start_time = None
+
         key_binds = pygame.key.get_pressed()
         if key_binds[pygame.K_w]:
             player.move(0, -1, maze)
@@ -89,6 +106,9 @@ def game_loop():
 
         # Update player and enemy with time delta
         player.update_position(delta_time, door_positions, keys, maze)
+        player.update_timer(delta_time)
+
+        # Update enemy movement
         for enemy in enemy_objects:
             params = inspect.signature(enemy.move).parameters
             if 'player_direction' in params:
@@ -96,8 +116,8 @@ def game_loop():
             else:
                 enemy.move((player.x, player.y), maze, delta_time)
 
-        # Check for collision with enemies
-        if check_collision(player, enemy_objects):
+        # Check for collision with enemies or remaining time
+        if check_collision(player, enemy_objects) or player.timer <= 0:
             game_over = True
             game_over_start_time = time.time()
             continue
@@ -119,6 +139,7 @@ def game_loop():
         for enemy in enemy_objects:
             enemy.draw(WIN, camera)
 
+        display_player_stats(player.floor, player.timer)
         pygame.display.update()
 
     pygame.quit()

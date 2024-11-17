@@ -23,21 +23,35 @@ class Key:
         key_sprite = KEY_OBJECTS['real'] if self.is_real else KEY_OBJECTS['fake']
         win.blit(key_sprite, (x, y))
 
-def generate_keys(maze, center_x, center_y, num_keys=4, min_distance=12):
+def generate_keys(maze, center_x, center_y, num_keys=4):
+    min_distance_from_center = 12
+    min_distance_from_key = 8
     keys = []
     real_key_added = False
 
     while len(keys) < num_keys:
+        # Generate random coordinates within maze bounds
         x, y = random.randint(1, len(maze[0]) - 2), random.randint(1, len(maze) - 2)
         
-        # Calculate distance from center
-        distance = math.sqrt((x - center_x) ** 2 + (y - center_y) ** 2)
+        # Calculate distance from maze center
+        distance_from_center = math.sqrt((x - center_x) ** 2 + (y - center_y) ** 2)
         
-        if maze[y][x] == 'O' and distance >= min_distance:
-            # Set is_real to True for the real key and False for fake keys
-            is_real = not real_key_added
-            keys.append(Key(x, y, is_real))
-            real_key_added = real_key_added or is_real
+        # Ensure the tile is walkable and far enough from the maze center
+        if maze[y][x] == 'O' and distance_from_center >= min_distance_from_center:
+            
+            # Check if the new key is too close to any existing keys
+            too_close = False
+            for key in keys:
+                distance_from_key = math.sqrt((x - key.x) ** 2 + (y - key.y) ** 2)
+                if distance_from_key < min_distance_from_key:
+                    too_close = True
+                    break
+            
+            # If the new key position is valid, add it to the list
+            if not too_close:
+                is_real = not real_key_added  # Set is_real for the first key only
+                keys.append(Key(x, y, is_real))
+                real_key_added = real_key_added or is_real
 
     return keys
 

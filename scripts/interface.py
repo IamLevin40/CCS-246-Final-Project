@@ -87,3 +87,51 @@ def game_over_screen():
                     running = False  # Exit the title screen loop
 
     title_screen()
+
+def display_player_stats(floor, timer=0):
+    # Define font settings
+    font_label = pygame.font.Font(None, 24)
+    font_value = pygame.font.Font(None, 32)
+    font_value.set_bold(True)
+    
+    # Render the texts for labels and values
+    floor_label_text = font_label.render("FLOOR", True, BLACK)
+    floor_value_text = font_value.render(str(floor), True, BLACK)
+    
+    timer_label_text = font_label.render("TIMER", True, BLACK)
+    timer_value_text = font_value.render(f"{timer:.1f}s", True, BLACK)
+    
+    # Calculate positions
+    # Background box dimensions
+    box_width = 120
+    box_height = 60
+    box_padding = 10
+
+    # Get screen center for horizontal alignment
+    center_x = WIDTH // 2
+
+    # Box position
+    floor_box_rect = pygame.Rect(center_x - box_width - box_padding, 10, box_width, box_height)
+    timer_box_rect = pygame.Rect(center_x + box_padding, 10, box_width, box_height)
+    
+    # Draw background rectangles
+    pygame.draw.rect(WIN, FLOOR_BG_COLOR, floor_box_rect)
+    pygame.draw.rect(WIN, TIMER_BG_COLOR, timer_box_rect)
+    
+    # Draw borders for better visibility
+    pygame.draw.rect(WIN, WHITE, floor_box_rect, 4)
+    pygame.draw.rect(WIN, WHITE, timer_box_rect, 4)
+    
+    # Calculate text positions for center alignment within the boxes
+    floor_label_pos = floor_label_text.get_rect(center=(floor_box_rect.centerx, floor_box_rect.y + 18))
+    floor_value_pos = floor_value_text.get_rect(center=(floor_box_rect.centerx, floor_box_rect.y + 40))
+    
+    timer_label_pos = timer_label_text.get_rect(center=(timer_box_rect.centerx, timer_box_rect.y + 18))
+    timer_value_pos = timer_value_text.get_rect(center=(timer_box_rect.centerx, timer_box_rect.y + 40))
+    
+    # Render the texts on the screen
+    WIN.blit(floor_label_text, floor_label_pos)
+    WIN.blit(floor_value_text, floor_value_pos)
+    
+    WIN.blit(timer_label_text, timer_label_pos)
+    WIN.blit(timer_value_text, timer_value_pos)

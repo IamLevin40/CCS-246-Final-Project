@@ -13,6 +13,7 @@ class Player:
         self.key_is_real = False
         self.maze_interaction_triggered = False
         self.is_immune = False
+        self.floor = 1
 
         self.float_x, self.float_y = x, y
         self.start_pos = (x, y)
@@ -20,6 +21,13 @@ class Player:
         self.current_tile = ''
         self.is_moving = False
         self.elapsed_time = 0
+        self.floor_up_start_time = None
+
+        # Timer attributes
+        self.init_time = INIT_TIMER
+        self.timer = INIT_TIMER
+        self.bonus_time = INIT_TIMER
+        self.min_bonus_limit = INIT_MIN_BONUS_LIMIT
         
         # Load animations for each state
         self.animations = {
@@ -96,3 +104,30 @@ class Player:
         adjusted_rect = camera.apply(self)
         current_frame = self.animations[self.current_state][self.frame_index]
         win.blit(current_frame, adjusted_rect)
+
+    def update_timer(self, delta_time):
+        # Decrement the timer by the elapsed time
+        self.timer -= delta_time
+        if self.timer < 0:
+            self.timer = 0
+
+    def calculate_bonus_time(self):
+        # Calculate the bonus time using the given formula
+        return self.bonus_time - ((self.init_time / self.min_bonus_limit) / 2) + ((self.floor - 1) * 0.05)
+
+    def floor_up(self):
+        # Handles player increasing floor
+        self.floor += 1
+        self.has_key = False
+        self.key_is_real = False
+        
+        # Apply bonus time and update timer
+        self.bonus_time = self.calculate_bonus_time()
+        
+        # Ensure bonus time doesn't go below min limit
+        if self.bonus_time < self.min_bonus_limit:
+            self.bonus_time = self.min_bonus_limit
+        
+        self.timer += self.bonus_time
+
+        self.floor_up_start_time = None
