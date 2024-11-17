@@ -125,7 +125,11 @@ def game_loop():
 
 def check_collision(player, enemies):
     # Check if any enemy has collided with the player
+    buffer = 10
+    player_rect = player.rect.inflate(-buffer, -buffer)
     for enemy in enemies:
-        if player.rect.colliderect(enemy.rect) and not player.is_immune:
+        # Create a smaller collision box for each enemy
+        enemy_rect = enemy.rect.inflate(-buffer, -buffer)
+        if player_rect.colliderect(enemy_rect) and not player.is_immune:
             return True
     return False
