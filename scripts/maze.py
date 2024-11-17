@@ -81,9 +81,9 @@ def ensure_border_closed(rows, cols, maze):
         maze[0][j] = 'X'
         maze[rows - 1][j] = 'X'
 
-def add_zone(maze, enemy_x, enemy_y):
+def add_zone(rows, cols, maze, enemy_x, enemy_y):
     # Zone for the player (center of the maze)
-    center_x, center_y = ROWS // 2, COLS // 2
+    center_x, center_y = rows // 2, cols // 2
     for i in range(center_x - 1, center_x + 2):
         for j in range(center_y - 1, center_y + 2):
             maze[i][j] = 'O'
@@ -91,7 +91,7 @@ def add_zone(maze, enemy_x, enemy_y):
     # Enemy zone in a corner
     for i in range(enemy_x, enemy_x + 3):
         for j in range(enemy_y, enemy_y + 3):
-            if 0 <= i < ROWS and 0 <= j < COLS:
+            if 0 <= i < rows and 0 <= j < cols:
                 maze[j][i] = 'O'
 
     return maze

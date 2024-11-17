@@ -5,7 +5,7 @@ import pygame
 # Display settings
 WIDTH, HEIGHT = 960, 640
 TILE_SIZE = 16  # Size of each tile in pixels
-ROWS, COLS = 33, 33
+INIT_ROWS, INIT_COLS = 33, 33
 PORTAL_STRUCTURE_SIZE = 3
 
 # Colors
@@ -136,7 +136,7 @@ STRUCTURE_PORTAL_TILE_SPRITES = {
 
 # Initial attributes
 INIT_TIMER = 60
-INIT_MIN_BONUS_LIMIT = 20
+INIT_MIN_BONUS_LIMIT = 40
 INIT_SPEED_PLAYER = 7.2
 ENEMIES = {
     "pursuer": {
@@ -159,6 +159,7 @@ ENEMIES = {
 MAX_ENEMIES = 3  # Excludes default
 ENEMY_DEFAULT_LIST = ["pursuer"]
 ENEMY_CHOICES = ["feigner", "glimmer", "ambusher"]
+MAX_FLOOR_TO_INCREASE_MAZE_SIZE = 3
 
 # Initialize Pygame
 pygame.init()

@@ -11,15 +11,25 @@ from tilemap import *
 from camera import Camera
 
 def start_mechanics(existing_player=None):
+    # Calculate rows and cols based on the player floor
+    rows = INIT_ROWS
+    cols = INIT_COLS
+    
     # Player spawns in the center of the player safe zone
     if existing_player:
         player = existing_player
-        player.x, player.y = ROWS // 2, COLS // 2  # Reset player position
+        
+        # Calculate rows and cols based on the player floor
+        rows = rows + (math.floor((player.floor - 1) * (1 / MAX_FLOOR_TO_INCREASE_MAZE_SIZE)) * 2)
+        cols = cols + (math.floor((player.floor - 1) * (1 / MAX_FLOOR_TO_INCREASE_MAZE_SIZE)) * 2)
+        
+        player.x, player.y = rows // 2, cols // 2  # Reset player position
         player.float_x, player.float_y = player.x, player.y
         player.target_pos = (player.x, player.y)
+        player.current_tile = ''
     else:
         # Player spawns in the center of the player safe zone
-        player = Player(ROWS // 2, COLS // 2, INIT_SPEED_PLAYER)
+        player = Player(rows // 2, cols // 2, INIT_SPEED_PLAYER)
 
     # Dictionary mapping enemy type names to their classes
     ENEMY_CLASSES = {
@@ -29,12 +39,12 @@ def start_mechanics(existing_player=None):
         "ambusher": Ambusher
     }
     enemies = ENEMY_DEFAULT_LIST
-    random.shuffle(ENEMY_CHOICES)
-    enemies.extend(ENEMY_CHOICES[:(MAX_ENEMIES - len(ENEMY_DEFAULT_LIST))])  # Add two randomly selected enemy types
+    selected_enemies = random.sample(ENEMY_CHOICES, (MAX_ENEMIES - len(ENEMY_DEFAULT_LIST)))
+    enemies.extend(selected_enemies)
 
     enemy_objects = []
-    maze, door_positions = generate_maze(ROWS, COLS)
-    keys = generate_keys(maze, ROWS // 2, COLS // 2)
+    maze, door_positions = generate_maze(rows, cols)
+    keys = generate_keys(maze, rows // 2, cols // 2)
     used_positions = set()  # Set to track used (x, y) coordinates
 
     # Instantiate each enemy and add a safe zone for them in the maze
@@ -42,17 +52,17 @@ def start_mechanics(existing_player=None):
         enemy_x, enemy_y = None, None
         # Find a unique position for each enemy
         while True:
-            enemy_x = random.choice([1, ROWS - 4])
-            enemy_y = random.choice([1, COLS - 4])
+            enemy_x = random.choice([1, rows - 4])
+            enemy_y = random.choice([1, cols - 4])
             if (enemy_x, enemy_y) not in used_positions:
                 used_positions.add((enemy_x, enemy_y))
                 break  # Exit loop once we find a unique position
 
-        maze = add_zone(maze, enemy_x, enemy_y)  # Add safe zone for the enemy
+        maze = add_zone(rows, cols, maze, enemy_x, enemy_y)  # Add safe zone for the enemy
         enemy_class = ENEMY_CLASSES[enemy_type]
         enemy_objects.append(enemy_class(enemy_x, enemy_y, enemy_type))
 
-    camera = Camera(WIDTH, HEIGHT)
+    camera = Camera(WIDTH, HEIGHT, rows, cols)
 
     return player, enemy_objects, maze, door_positions, keys, camera
 
@@ -90,7 +100,6 @@ def game_loop():
                 player.floor_up()
                 player, enemy_objects, maze, door_positions, keys, camera = start_mechanics(player)
                 tile_map = generate_tiles(maze)
-                player.current_tile == ''
         else:
             player.floor_up_start_time = None
 
