@@ -23,6 +23,10 @@ class Player:
         self.elapsed_time = 0
         self.floor_up_start_time = None
 
+        # Attributes for continuous movement
+        self.current_direction = None
+        self.requested_direction = None
+
         # Timer attributes
         self.init_time = INIT_TIMER
         self.timer = INIT_TIMER
@@ -43,44 +47,60 @@ class Player:
         self.rect = pygame.Rect(self.x * TILE_SIZE, self.y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
 
     def move(self, dx, dy, maze):
-        # Only set a new target if not already moving
+        # Set the requested direction
+        self.requested_direction = (dx, dy)
         if not self.is_moving:
-            new_x = self.x + dx
-            new_y = self.y + dy
+            self.set_direction(dx, dy, maze)
 
-            # Check if the new target position is walkable
-            if maze[new_y][new_x] not in {'X', 'DL', 'DI'}:
-                # Initialize movement state
-                self.start_pos = (self.float_x, self.float_y)
-                self.target_pos = (new_x, new_y)
-                self.current_tile = maze[new_y][new_x]
-                self.is_moving = True
-                self.elapsed_time = 0  # Reset time elapsed
+    def can_move_in_direction(self, dx, dy, maze):
+        # Check if the player can move in the requested direction
+        new_x = self.x + dx
+        new_y = self.y + dy
+        return maze[new_y][new_x] not in {'X', 'DL', 'DI'}
 
-                # Set animation state based on direction
-                if dy == -1:
-                    self.current_state = "up"
-                elif dy == 1:
-                    self.current_state = "down"
-                elif dx == -1:
-                    self.current_state = "left"
-                elif dx == 1:
-                    self.current_state = "right"
+    def set_direction(self, dx, dy, maze):
+        # Set a new direction if it's a valid move
+        if self.can_move_in_direction(dx, dy, maze):
+            # Set target position for tile-based movement
+            self.start_pos = (self.x, self.y)
+            self.target_pos = (self.x + dx, self.y + dy)
+            self.current_tile = maze[self.target_pos[1]][self.target_pos[0]]
+            self.is_moving = True
+            self.elapsed_time = 0
+            self.current_direction = (dx, dy)
 
-    def update_position(self, delta_time, door_positions, keys, maze):        
+            # Set animation state based on direction
+            if dy == -1:
+                self.current_state = "up"
+            elif dy == 1:
+                self.current_state = "down"
+            elif dx == -1:
+                self.current_state = "left"
+            elif dx == 1:
+                self.current_state = "right"
+
+    def update_position(self, delta_time, door_positions, keys, maze):
         if self.is_moving:
-            # Increment elapsed time
-            self.elapsed_time += delta_time
-            t = min(self.elapsed_time * self.speed, 1)  # Normalize to [0, 1]
+            # Calculate the movement step
+            move_distance = delta_time * self.speed
+            total_distance = TILE_SIZE
 
-            # Interpolate position between start and target
-            self.float_x = (1 - t) * self.start_pos[0] + t * self.target_pos[0]
-            self.float_y = (1 - t) * self.start_pos[1] + t * self.target_pos[1]
+            # Update float positions based on direction
+            dx, dy = self.current_direction
+            self.float_x += dx * move_distance / total_distance
+            self.float_y += dy * move_distance / total_distance
 
-            # Stop moving once the target is reached
-            if t >= 1:
+            # Check if we reached the target tile
+            if abs(self.float_x - self.target_pos[0]) < 0.1 and abs(self.float_y - self.target_pos[1]) < 0.1:
+                self.float_x, self.float_y = self.target_pos
+                self.x, self.y = self.target_pos
                 self.is_moving = False
-                self.x, self.y = self.target_pos  # Update integer position to target
+
+                # Check if the requested direction can be set
+                if self.requested_direction and self.can_move_in_direction(*self.requested_direction, maze):
+                    self.set_direction(*self.requested_direction, maze)
+                elif self.current_direction and self.can_move_in_direction(*self.current_direction, maze):
+                    self.set_direction(*self.current_direction, maze)
 
         # Update rect for rendering
         self.rect.topleft = (int(self.float_x * TILE_SIZE), int(self.float_y * TILE_SIZE))

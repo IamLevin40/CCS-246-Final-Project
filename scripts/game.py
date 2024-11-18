@@ -103,14 +103,15 @@ def game_loop():
         else:
             player.floor_up_start_time = None
 
+        # Key binds for the player
         key_binds = pygame.key.get_pressed()
-        if key_binds[pygame.K_w]:
+        if key_binds[pygame.K_w] or key_binds[pygame.K_UP]:
             player.move(0, -1, maze)
-        if key_binds[pygame.K_s]:
+        if key_binds[pygame.K_s] or key_binds[pygame.K_DOWN]:
             player.move(0, 1, maze)
-        if key_binds[pygame.K_a]:
+        if key_binds[pygame.K_a] or key_binds[pygame.K_LEFT]:
             player.move(-1, 0, maze)
-        if key_binds[pygame.K_d]:
+        if key_binds[pygame.K_d] or key_binds[pygame.K_RIGHT]:
             player.move(1, 0, maze)
 
         # Update player and enemy with time delta

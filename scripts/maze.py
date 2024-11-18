@@ -141,10 +141,10 @@ def add_portal_structure(rows, cols, maze, dimension):
     }
 
     portal_position_map = {
-        'top': (struct_x + dimension, range(struct_y + 2, struct_y + wall_size)),
-        'bottom': (struct_x + dimension, range(struct_y + 2, struct_y + wall_size)),
-        'left': (range(struct_x + 2, struct_x + wall_size), struct_y + dimension),
-        'right': (range(struct_x + 2, struct_x + wall_size), struct_y + dimension)
+        'top': ((struct_x + dimension) - 1, range(struct_y + 2, struct_y + wall_size)),
+        'bottom': ((struct_x + dimension) + 1, range(struct_y + 2, struct_y + wall_size)),
+        'left': (range(struct_x + 2, struct_x + wall_size), (struct_y + dimension) - 1),
+        'right': (range(struct_x + 2, struct_x + wall_size), (struct_y + dimension) + 1)
     }
 
     # Create door and portal using the combined function
