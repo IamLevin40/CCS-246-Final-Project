@@ -133,7 +133,7 @@ class Player:
 
     def calculate_bonus_time(self):
         # Calculate the bonus time using the given formula
-        return self.bonus_time - ((self.init_time / self.min_bonus_limit) / 2) + ((self.floor - 1) * 0.05)
+        return self.bonus_time - ((self.init_time / self.min_bonus_limit) / 2) + ((self.floor - 1) * 0.1)
 
     def floor_up(self):
         # Handles player increasing floor

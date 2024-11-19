@@ -136,7 +136,7 @@ STRUCTURE_PORTAL_TILE_SPRITES = {
 
 # Initial attributes
 INIT_TIMER = 60
-INIT_MIN_BONUS_LIMIT = 40
+INIT_MIN_BONUS_LIMIT = 30
 INIT_SPEED_PLAYER = 100
 ENEMIES = {
     "pursuer": {
@@ -159,7 +159,7 @@ ENEMIES = {
 MAX_ENEMIES = 3
 ENEMY_DEFAULT_LIST = ["pursuer"]
 ENEMY_CHOICES = ["feigner", "glimmer", "ambusher"]
-MAX_FLOOR_TO_INCREASE_MAZE_SIZE = 2
+MAX_FLOOR_TO_INCREASE_MAZE_SIZE = 1
 
 # Initialize Pygame
 pygame.init()

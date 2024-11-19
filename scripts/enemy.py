@@ -124,35 +124,35 @@ class EnemyAI:
 # Subclasses for each enemy
 
 class Pursuer(EnemyAI):
-    def move(self, player_pos, maze, delta_time):
+    def move(self, player, maze, delta_time):
         # Target the player directly
-        target = player_pos
+        target = (player.x, player.y)
         super().move(target, maze, delta_time)
 
 class Feigner(EnemyAI):
     def __init__(self, x, y, enemy_type):
         super().__init__(x, y, enemy_type)
         self.random_target = None
-        self.distance_away_from_player = 8
-        self.distance_target_from_player = 8
+        self.init_distance_away_from_player = 9
+        self.init_distance_target_from_player = 9
 
-    def get_random_distant_target(self, player_pos, maze):
+    def get_random_distant_target(self, player, maze):
         while True:
             rand_x, rand_y = random.randint(0, len(maze[0]) - 1), random.randint(0, len(maze) - 1)
-            if maze[rand_y][rand_x] == 'O' and self.heuristic(rand_x, rand_y, player_pos[0], player_pos[1]) < self.distance_target_from_player:
+            if maze[rand_y][rand_x] == 'O' and self.heuristic(rand_x, rand_y, player.x, player.y) < self.init_distance_target_from_player + (math.floor((player.floor - 1) * (1 / MAX_FLOOR_TO_INCREASE_MAZE_SIZE)) * 2):
                 return (rand_x, rand_y)
 
-    def move(self, player_pos, maze, delta_time):
-        distance = self.heuristic(self.x, self.y, player_pos[0], player_pos[1])
+    def move(self, player, maze, delta_time):
+        distance = self.heuristic(self.x, self.y, player.x, player.y)
 
         # Decide target based on distance to player
-        if distance > self.distance_away_from_player:
-            target = player_pos  # Pursue player directly if farther than 8 tiles
+        if distance > self.init_distance_away_from_player + (math.floor((player.floor - 1) * (1 / MAX_FLOOR_TO_INCREASE_MAZE_SIZE)) * 2):
+            target = (player.x, player.y)  # Pursue player directly if farther than 8 tiles
             self.random_target = None
         else:
             # Use existing random target or find a new one if reached
             if not self.random_target or (self.x, self.y) == self.random_target:
-                self.random_target = self.get_random_distant_target(player_pos, maze)
+                self.random_target = self.get_random_distant_target(player, maze)
             target = self.random_target
 
         # Move towards the chosen target
@@ -162,33 +162,33 @@ class Glimmer(EnemyAI):
     def __init__(self, x, y, enemy_type):
         super().__init__(x, y, enemy_type)
         self.random_target = None
-        self.distance_away_from_player = 8
-        self.distance_target_from_player = 8
+        self.init_distance_away_from_player = 9
+        self.init_distance_target_from_player = 9
 
-    def get_random_distant_target(self, player_pos, maze):
+    def get_random_distant_target(self, player, maze):
         while True:
             rand_x, rand_y = random.randint(0, len(maze[0]) - 1), random.randint(0, len(maze) - 1)
-            if maze[rand_y][rand_x] == 'O' and self.heuristic(rand_x, rand_y, player_pos[0], player_pos[1]) > self.distance_target_from_player:
+            if maze[rand_y][rand_x] == 'O' and self.heuristic(rand_x, rand_y, player.x, player.y) > self.init_distance_target_from_player + (math.floor((player.floor - 1) * (1 / MAX_FLOOR_TO_INCREASE_MAZE_SIZE)) * 2):
                 return (rand_x, rand_y)
 
-    def move(self, player_pos, maze, delta_time):
-        distance = self.heuristic(self.x, self.y, player_pos[0], player_pos[1])
+    def move(self, player, maze, delta_time):
+        distance = self.heuristic(self.x, self.y, player.x, player.y)
 
         # Decide target based on distance to player
-        if distance < self.distance_away_from_player:
-            target = player_pos  # Pursue player directly if closer than 8 tiles
+        if distance < self.init_distance_away_from_player + (math.floor((player.floor - 1) * (1 / MAX_FLOOR_TO_INCREASE_MAZE_SIZE)) * 2):
+            target = (player.x, player.y)  # Pursue player directly if closer than 8 tiles
             self.random_target = None
         else:
             # Use existing random target or find a new one if reached
             if not self.random_target or (self.x, self.y) == self.random_target:
-                self.random_target = self.get_random_distant_target(player_pos, maze)
+                self.random_target = self.get_random_distant_target(player, maze)
             target = self.random_target
 
         # Move towards the chosen target
         super().move(target, maze, delta_time)
 
 class Ambusher(EnemyAI):
-    def move(self, player_pos, player_direction, maze, delta_time):
+    def move(self, player, maze, delta_time):
         direction_map = {
             "up": (0, -1),
             "down": (0, 1),
@@ -198,8 +198,8 @@ class Ambusher(EnemyAI):
         }
 
         # Get the direction vector based on player's direction
-        dx, dy = direction_map[player_direction]
-        target = (player_pos[0] + 4 * dx, player_pos[1] + 4 * dy)
+        dx, dy = direction_map[player.current_state]
+        target = (player.x + 4 * dx, player.y + 4 * dy)
 
         # Ensure target is within maze bounds and not a wall
         target_x, target_y = target
@@ -207,4 +207,4 @@ class Ambusher(EnemyAI):
             super().move(target, maze, delta_time)
         else:
             # Fallback: if the tile is outside bounds or blocked, target the player's position
-            super().move(player_pos, maze, delta_time)
+            super().move((player.x, player.y), maze, delta_time)

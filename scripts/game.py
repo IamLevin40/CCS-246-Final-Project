@@ -120,11 +120,7 @@ def game_loop():
 
         # Update enemy movement
         for enemy in enemy_objects:
-            params = inspect.signature(enemy.move).parameters
-            if 'player_direction' in params:
-                enemy.move((player.x, player.y), player.current_state, maze, delta_time)
-            else:
-                enemy.move((player.x, player.y), maze, delta_time)
+            enemy.move(player, maze, delta_time)
 
         # Check for collision with enemies or remaining time
         if check_collision(player, enemy_objects) or player.timer <= 0:
