@@ -56,6 +56,14 @@ class Player:
         # Check if the player can move in the requested direction
         new_x = self.x + dx
         new_y = self.y + dy
+
+        # Ensure the position is within maze bounds
+        rows = len(maze)
+        cols = len(maze[0])
+        if not (0 <= new_x < cols and 0 <= new_y < rows):
+            return False
+
+        # Check if the tile is walkable
         return maze[new_y][new_x] not in {'X', 'DL', 'DI'}
 
     def set_direction(self, dx, dy, maze):
@@ -78,6 +86,9 @@ class Player:
                 self.current_state = "left"
             elif dx == 1:
                 self.current_state = "right"
+        else:
+            self.float_x, self.float_y = self.x, self.y
+            self.is_moving = False
 
     def update_position(self, delta_time, door_positions, keys, maze):
         if self.is_moving:
@@ -101,6 +112,10 @@ class Player:
                     self.set_direction(*self.requested_direction, maze)
                 elif self.current_direction and self.can_move_in_direction(*self.current_direction, maze):
                     self.set_direction(*self.current_direction, maze)
+                else:
+                    # Stop moving and reset float positions if no valid direction
+                    self.float_x, self.float_y = self.x, self.y
+                    self.is_moving = False
 
         # Update rect for rendering
         self.rect.topleft = (int(self.float_x * TILE_SIZE), int(self.float_y * TILE_SIZE))

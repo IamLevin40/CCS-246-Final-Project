@@ -38,7 +38,7 @@ def start_mechanics(existing_player=None):
         "glimmer": Glimmer,
         "ambusher": Ambusher
     }
-    enemies = ENEMY_DEFAULT_LIST
+    enemies = list(ENEMY_DEFAULT_LIST)
     selected_enemies = random.sample(ENEMY_CHOICES, (MAX_ENEMIES - len(ENEMY_DEFAULT_LIST)))
     enemies.extend(selected_enemies)
 
@@ -47,20 +47,30 @@ def start_mechanics(existing_player=None):
     keys = generate_keys(maze, rows // 2, cols // 2)
     used_positions = set()  # Set to track used (x, y) coordinates
 
-    # Instantiate each enemy and add a safe zone for them in the maze
-    for enemy_type in enemies:
-        enemy_x, enemy_y = None, None
-        # Find a unique position for each enemy
-        while True:
-            enemy_x = random.choice([1, rows - 4])
-            enemy_y = random.choice([1, cols - 4])
-            if (enemy_x, enemy_y) not in used_positions:
-                used_positions.add((enemy_x, enemy_y))
-                break  # Exit loop once we find a unique position
+    # Instantiate each enemy and assign positions
+    assigned_positions = []  # List to track assigned positions
+    remaining_enemies = list(enemies)  # Create a copy of enemies to track unassigned ones
 
-        maze = add_zone(rows, cols, maze, enemy_x, enemy_y)  # Add safe zone for the enemy
-        enemy_class = ENEMY_CLASSES[enemy_type]
-        enemy_objects.append(enemy_class(enemy_x, enemy_y, enemy_type))
+    while remaining_enemies:
+        used_positions = set()  # Track positions in the current batch
+
+        # Assign up to 4 positions in this batch
+        for _ in range(min(4, len(remaining_enemies))):
+            while True:
+                enemy_x = random.choice([1, rows - 4])
+                enemy_y = random.choice([1, cols - 4])
+                if (enemy_x, enemy_y) not in used_positions:
+                    used_positions.add((enemy_x, enemy_y))
+                    assigned_positions.append((enemy_x, enemy_y))
+                    break  # Exit once a unique position is found
+
+        # Assign enemies to the positions in this batch
+        for position in used_positions:
+            if remaining_enemies:
+                enemy_type = remaining_enemies.pop(0)  # Remove the first enemy in the list
+                enemy_class = ENEMY_CLASSES[enemy_type]
+                enemy_objects.append(enemy_class(position[0], position[1], enemy_type))
+                maze = add_zone(rows, cols, maze, position[0], position[1])  # Add safe zone
 
     camera = Camera(WIDTH, HEIGHT, rows, cols)
 

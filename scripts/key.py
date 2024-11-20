@@ -66,6 +66,8 @@ def check_key_collection(player, keys):
 def check_door_unlock(player, door_positions, maze):
     # Check if the player is near a door and has a key
     if player.has_key:
+        pygame.time.set_timer(DOOR_LOCK_EVENT, 0)
+        # Iterate for every door tiles
         for door_y, door_x in door_positions:
             if abs(player.x - door_x) + abs(player.y - door_y) == 1:  # Near the door
                 if player.key_is_real:
