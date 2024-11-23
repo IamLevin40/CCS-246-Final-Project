@@ -60,6 +60,22 @@ GLIMMER_SPRITES = {
     "right": "sprites/enemies/glimmer/right.png"
 }
 
+SPECTER_SPRITES = {
+    "rest": "sprites/enemies/specter/rest.png",
+    "up": "sprites/enemies/specter/up.png",
+    "down": "sprites/enemies/specter/down.png",
+    "left": "sprites/enemies/specter/left.png",
+    "right": "sprites/enemies/specter/right.png"
+}
+
+SLENDER_SPRITES = {
+    "rest": "sprites/enemies/slender/rest.png",
+    "up": "sprites/enemies/slender/up.png",
+    "down": "sprites/enemies/slender/down.png",
+    "left": "sprites/enemies/slender/left.png",
+    "right": "sprites/enemies/slender/right.png"
+}
+
 PATH_TILE_SPRITES = {
     # Four-direction patterns
     "side_end": "sprites/path_tiles/all_sides.png",
@@ -137,28 +153,35 @@ STRUCTURE_PORTAL_TILE_SPRITES = {
 # Initial attributes
 INIT_TIMER = 60
 INIT_MIN_BONUS_LIMIT = 30
-INIT_SPEED_PLAYER = 100
+INIT_SPEED_PLAYER = 100.0
 ENEMIES = {
     "pursuer": {
-        "init_speed": 6.0,
+        "init_speed": 5.6,
         "sprites": PURSUER_SPRITES
     },
     "feigner": {
-        "init_speed": 6.0,
+        "init_speed": 5.6,
         "sprites": FEIGNER_SPRITES
     },
     "glimmer": {
-        "init_speed": 6.0,
+        "init_speed": 5.6,
         "sprites": GLIMMER_SPRITES
     },
     "ambusher": {
-        "init_speed": 6.0,
+        "init_speed": 5.6,
         "sprites": AMBUSHER_SPRITES
+    },
+    "specter": {
+        "init_speed": 5.6,
+        "sprites": SPECTER_SPRITES
+    },
+    "slender": {
+        "init_speed": 5.6,
+        "sprites": SLENDER_SPRITES
     }
 }
-MAX_ENEMIES = 3
-ENEMY_DEFAULT_LIST = ["pursuer"]
-ENEMY_CHOICES = ["feigner", "glimmer", "ambusher"]
+INIT_MAX_ENEMIES = 3
+MAX_FLOOR_TO_INCREASE_MAX_ENEMIES = 3
 MAX_FLOOR_TO_INCREASE_MAZE_SIZE = 1
 
 # Initialize Pygame

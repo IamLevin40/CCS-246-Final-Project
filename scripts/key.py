@@ -26,6 +26,8 @@ class Key:
 def generate_keys(maze, center_x, center_y, num_keys=4):
     min_distance_from_center = 12
     min_distance_from_key = 8
+    min_distance_from_structure = 12 
+    structure_tiles = {'S', 'P', 'DL', 'DU', 'DI'}
     keys = []
     real_key_added = False
 
@@ -40,15 +42,29 @@ def generate_keys(maze, center_x, center_y, num_keys=4):
         if maze[y][x] == 'O' and distance_from_center >= min_distance_from_center:
             
             # Check if the new key is too close to any existing keys
-            too_close = False
+            too_close_to_key = False
             for key in keys:
                 distance_from_key = math.sqrt((x - key.x) ** 2 + (y - key.y) ** 2)
                 if distance_from_key < min_distance_from_key:
-                    too_close = True
+                    too_close_to_key = True
+                    break
+
+            # Check if the new key is too close to any portal structure tile
+            too_close_to_structure = False
+            for i in range(max(0, y - min_distance_from_structure), 
+                           min(len(maze), y + min_distance_from_structure + 1)):
+                for j in range(max(0, x - min_distance_from_structure), 
+                               min(len(maze[0]), x + min_distance_from_structure + 1)):
+                    if maze[i][j] in structure_tiles:
+                        distance_from_structure = math.sqrt((x - j) ** 2 + (y - i) ** 2)
+                        if distance_from_structure < min_distance_from_structure:
+                            too_close_to_structure = True
+                            break
+                if too_close_to_structure:
                     break
             
             # If the new key position is valid, add it to the list
-            if not too_close:
+            if not too_close_to_key and not too_close_to_structure:
                 is_real = not real_key_added  # Set is_real for the first key only
                 keys.append(Key(x, y, is_real))
                 real_key_added = real_key_added or is_real

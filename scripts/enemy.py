@@ -1,6 +1,6 @@
 # enemy.py
 
-import pygame, math, random
+import pygame, math, random, time
 from queue import PriorityQueue
 from settings import *
 from utils import split_and_resize_sprite
@@ -35,12 +35,15 @@ class EnemyAI:
         # Euclidean distance
         return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
-    def a_star(self, start, goal, maze):
+    def a_star(self, start, goal, maze, is_immune_to_wall):
         open_set = PriorityQueue()
         open_set.put((0, start))
         came_from = {}
         g_score = {start: 0}
         f_score = {start: self.heuristic(*start, *goal)}
+
+        def is_walkable(tile):
+            return tile in {'O'} or (is_immune_to_wall and tile in {'X', 'S', 'P', 'DL', 'DU', 'DI'})
 
         while not open_set.empty():
             current = open_set.get()[1]
@@ -57,7 +60,7 @@ class EnemyAI:
             neighbors = [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)]
 
             for nx, ny in neighbors:
-                if 0 <= nx < len(maze[0]) and 0 <= ny < len(maze) and maze[ny][nx] not in {'X', 'S', 'P', 'DL', 'DU', 'DI'}:
+                if 0 <= nx < len(maze[0]) and 0 <= ny < len(maze) and is_walkable(maze[ny][nx]):
                     temp_g_score = g_score[current] + 1
                     if temp_g_score < g_score.get((nx, ny), float('inf')):
                         came_from[(nx, ny)] = current
@@ -67,10 +70,10 @@ class EnemyAI:
 
         return []
 
-    def move(self, player_pos, maze, delta_time):
+    def move(self, player_pos, maze, delta_time, is_immune_to_wall=False):
         if not self.is_moving:
             # Calculate new path if not moving
-            path = self.a_star((int(self.float_x), int(self.float_y)), player_pos, maze)
+            path = self.a_star((int(self.float_x), int(self.float_y)), player_pos, maze, is_immune_to_wall)
             if path:
                 # Set the next tile in path as the target
                 next_move = path[0]
@@ -208,3 +211,58 @@ class Ambusher(EnemyAI):
         else:
             # Fallback: if the tile is outside bounds or blocked, target the player's position
             super().move((player.x, player.y), maze, delta_time)
+
+class Specter(EnemyAI):
+    def __init__(self, x, y, enemy_type):
+        super().__init__(x, y, enemy_type)
+        self.last_visited_position = None
+        self.last_visited_time = None
+        self.double_speed = self.speed * 2
+        self.half_speed = self.speed / 2
+        self.cooldown_timer = 0
+        self.cooldown_duration = 3.0
+        self.active_timer = 0
+        self.active_duration = 3.0
+        self.is_doubled_speed_active = False
+
+    def move(self, player, maze, delta_time):
+        current_time = time.time()
+
+        if self.is_doubled_speed_active:
+            # If doubled speed is active, target last visited position
+            target = self.last_visited_position
+            self.speed = self.double_speed
+            # Check if the active duration has passed
+            if (self.x, self.y) == self.last_visited_position or (current_time - self.active_timer) >= self.active_duration:
+                self.is_doubled_speed_active = False
+                self.cooldown_timer = current_time  # Start cooldown
+                
+        else:
+            # If not in doubled speed mode, move towards player at half speed
+            target = (player.x, player.y)
+            self.speed = self.half_speed
+            # Enable doubled speed after cooldown
+            if (current_time - self.cooldown_timer) >= self.cooldown_duration:
+                self.is_doubled_speed_active = True
+                self.active_timer = current_time
+                # Record the player's last position
+                self.last_visited_position = (player.x, player.y)
+                self.last_visited_time = current_time
+
+        super().move(target, maze, delta_time)
+
+class Slender(EnemyAI):
+    def __init__(self, x, y, enemy_type):
+        super().__init__(x, y, enemy_type)
+        self.wall_pass_enabled = False
+        self.wall_pass_threshold = 7  # Distance to enable passing through walls
+
+    def move(self, player, maze, delta_time):
+        # Calculate distance to player
+        distance = self.heuristic(self.x, self.y, player.x, player.y)
+
+        # Enable or disable wall pass based on distance
+        self.wall_pass_enabled = distance > self.wall_pass_threshold
+
+        target = (player.x, player.y)  
+        super().move(target, maze, delta_time, self.wall_pass_enabled)

@@ -1,6 +1,6 @@
 # game.py
 
-import pygame, random, inspect
+import pygame, random
 from settings import *
 from interface import *
 from player import Player
@@ -9,6 +9,16 @@ from maze import *
 from key import *
 from tilemap import *
 from camera import Camera
+
+ENEMY_CLASSES = {
+    # Format: (Class, required_floor, weight)
+    "pursuer": (Pursuer, 1, -1),
+    "feigner": (Feigner, 1, 1.0),
+    "glimmer": (Glimmer, 1, 0.9),
+    "ambusher": (Ambusher, 1, 0.8),
+    "specter": (Specter, 1 + (MAX_FLOOR_TO_INCREASE_MAX_ENEMIES * 1), 0.7),
+    "slender": (Slender, 1 + (MAX_FLOOR_TO_INCREASE_MAX_ENEMIES * 2), 0.6)
+}
 
 def start_mechanics(existing_player=None):
     # Calculate rows and cols based on the player floor
@@ -31,16 +41,7 @@ def start_mechanics(existing_player=None):
         # Player spawns in the center of the player safe zone
         player = Player(rows // 2, cols // 2, INIT_SPEED_PLAYER)
 
-    # Dictionary mapping enemy type names to their classes
-    ENEMY_CLASSES = {
-        "pursuer": Pursuer,
-        "feigner": Feigner,
-        "glimmer": Glimmer,
-        "ambusher": Ambusher
-    }
-    enemies = list(ENEMY_DEFAULT_LIST)
-    selected_enemies = random.sample(ENEMY_CHOICES, (MAX_ENEMIES - len(ENEMY_DEFAULT_LIST)))
-    enemies.extend(selected_enemies)
+    enemies = get_enemies(player)
 
     enemy_objects = []
     maze, door_positions = generate_maze(rows, cols)
@@ -68,13 +69,56 @@ def start_mechanics(existing_player=None):
         for position in used_positions:
             if remaining_enemies:
                 enemy_type = remaining_enemies.pop(0)  # Remove the first enemy in the list
-                enemy_class = ENEMY_CLASSES[enemy_type]
+                enemy_class = ENEMY_CLASSES[enemy_type][0]
                 enemy_objects.append(enemy_class(position[0], position[1], enemy_type))
                 maze = add_zone(rows, cols, maze, position[0], position[1])  # Add safe zone
 
     camera = Camera(WIDTH, HEIGHT, rows, cols)
 
     return player, enemy_objects, maze, door_positions, keys, camera
+
+def get_enemies(player):
+    # Filter eligible enemies based on the player's floor
+    available_enemies = [
+        (enemy_type, data[2])  # (Enemy name, weight)
+        for enemy_type, data in ENEMY_CLASSES.items()
+        if player.floor >= data[1]
+    ]
+
+    # Separate guaranteed enemies (weight = -1) from weighted selection
+    guaranteed_enemies = [enemy for enemy, weight in available_enemies if weight == -1]
+    weighted_enemies = [(enemy, weight) for enemy, weight in available_enemies if weight != -1]
+
+    # Normalize weights for the remaining weighted selection
+    total_weight = sum(weight for _, weight in weighted_enemies)
+    normalized_weights = [(enemy, weight / total_weight) for enemy, weight in weighted_enemies]
+
+    # Calculate the maximum number of enemies to select
+    max_enemies = min(
+        (INIT_MAX_ENEMIES + (math.floor((player.floor - 1) * (1 / MAX_FLOOR_TO_INCREASE_MAX_ENEMIES)))),
+        len(available_enemies)
+    )
+
+    # Start with guaranteed enemies
+    selected_enemy_types = list(guaranteed_enemies)
+
+    # Fill remaining slots with weighted random unique enemies
+    while len(selected_enemy_types) < max_enemies:
+        # Randomly select an enemy using weighted probability
+        chosen_enemy = random.choices(
+            [enemy for enemy, _ in normalized_weights],
+            weights=[weight for _, weight in normalized_weights],
+            k=1
+        )[0]
+
+        # Ensure uniqueness in selection
+        if chosen_enemy not in selected_enemy_types:
+            selected_enemy_types.append(chosen_enemy)
+
+    # Combine default and selected enemies
+    enemies = list()
+    enemies.extend(selected_enemy_types)
+    return enemies
 
 def game_loop():
     player, enemy_objects, maze, door_positions, keys, camera = start_mechanics()   # Start summoning player and enemies

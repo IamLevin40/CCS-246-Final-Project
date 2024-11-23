@@ -48,7 +48,8 @@ def title_screen():
                     running = False  # Exit the title screen loop
     
     from game import game_loop
-    game_loop()
+    if not running:
+        game_loop()
 
 def game_over_screen():
     running = True
