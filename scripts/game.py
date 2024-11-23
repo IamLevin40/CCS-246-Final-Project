@@ -41,6 +41,7 @@ def start_mechanics(existing_player=None):
         # Player spawns in the center of the player safe zone
         player = Player(rows // 2, cols // 2, INIT_SPEED_PLAYER)
 
+    player.timer = float(INIT_TIMER)
     enemies = get_enemies(player)
 
     enemy_objects = []
@@ -125,6 +126,7 @@ def game_loop():
     tile_map = generate_tiles(maze)
     game_over = False
     game_over_start_time = None
+    clock = pygame.time.Clock()
 
     running = True
     while running:

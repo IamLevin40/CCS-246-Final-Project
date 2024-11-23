@@ -191,4 +191,3 @@ pygame.display.set_caption("Dungeon Labyrinth")
 
 # Frame rate
 FPS = 60
-clock = pygame.time.Clock()
