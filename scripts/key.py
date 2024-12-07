@@ -1,6 +1,6 @@
 # key.py
 
-import pygame, random, math, time
+import pygame, random, math
 from settings import *
 from utils import *
 from maze import *
@@ -18,7 +18,6 @@ class Key:
         self.rect = pygame.Rect(self.x * TILE_SIZE, self.y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
     
     def draw(self, win, camera):
-        # Assuming you have a key sprite loaded in utils
         x, y = camera.apply_to_maze(self.x, self.y)
         key_sprite = KEY_OBJECTS['real'] if self.is_real else KEY_OBJECTS['fake']
         win.blit(key_sprite, (x, y))

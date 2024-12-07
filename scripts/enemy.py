@@ -18,6 +18,7 @@ class EnemyAI:
         
         # Load speed and animations from ENEMIES dictionary
         self.speed = ENEMIES[enemy_type]["init_speed"]
+        self.speed_multiplier = 1.0
         self.animations = {
             state: split_and_resize_sprite(path, TILE_SIZE)
             for state, path in ENEMIES[enemy_type]["sprites"].items()
@@ -85,7 +86,7 @@ class EnemyAI:
         if self.is_moving:
             # Increment elapsed time
             self.elapsed_time += delta_time
-            t = min(self.elapsed_time * self.speed, 1)  # Normalize to [0, 1]
+            t = min(self.elapsed_time * (self.speed * self.speed_multiplier), 1)  # Normalize to [0, 1]
 
             # Interpolate position between start and target
             self.float_x = (1 - t) * self.start_pos[0] + t * self.target_pos[0]
@@ -266,3 +267,14 @@ class Slender(EnemyAI):
 
         target = (player.x, player.y)  
         super().move(target, maze, delta_time, self.wall_pass_enabled)
+
+
+ENEMY_CLASSES = {
+    # Format: (Class, required_floor, weight)
+    "pursuer": (Pursuer, 1, -1),
+    "feigner": (Feigner, 1, 1.0),
+    "glimmer": (Glimmer, 1, 0.9),
+    "ambusher": (Ambusher, 1, 0.8),
+    "specter": (Specter, 1 + (MAX_FLOOR_TO_INCREASE_MAX_ENEMIES * 1), 0.7),
+    "slender": (Slender, 1 + (MAX_FLOOR_TO_INCREASE_MAX_ENEMIES * 2), 0.6)
+}

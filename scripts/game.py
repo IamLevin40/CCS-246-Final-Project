@@ -7,18 +7,10 @@ from player import Player
 from enemy import *
 from maze import *
 from key import *
+from powerup import *
 from tilemap import *
 from camera import Camera
 
-ENEMY_CLASSES = {
-    # Format: (Class, required_floor, weight)
-    "pursuer": (Pursuer, 1, -1),
-    "feigner": (Feigner, 1, 1.0),
-    "glimmer": (Glimmer, 1, 0.9),
-    "ambusher": (Ambusher, 1, 0.8),
-    "specter": (Specter, 1 + (MAX_FLOOR_TO_INCREASE_MAX_ENEMIES * 1), 0.7),
-    "slender": (Slender, 1 + (MAX_FLOOR_TO_INCREASE_MAX_ENEMIES * 2), 0.6)
-}
 
 def start_mechanics(existing_player=None):
     # Calculate rows and cols based on the player floor
@@ -36,17 +28,16 @@ def start_mechanics(existing_player=None):
         player.x, player.y = rows // 2, cols // 2  # Reset player position
         player.float_x, player.float_y = player.x, player.y
         player.target_pos = (player.x, player.y)
-        player.current_tile = ''
+        # player.current_tile = ''
     else:
         # Player spawns in the center of the player safe zone
         player = Player(rows // 2, cols // 2, INIT_SPEED_PLAYER)
 
-    player.timer = float(INIT_TIMER)
     enemies = get_enemies(player)
 
     enemy_objects = []
     maze, door_positions = generate_maze(rows, cols)
-    keys = generate_keys(maze, rows // 2, cols // 2)
+    keys = generate_keys(maze, player.safe_zone_pos[0], player.safe_zone_pos[1])
     used_positions = set()  # Set to track used (x, y) coordinates
 
     # Instantiate each enemy and assign positions
@@ -74,9 +65,10 @@ def start_mechanics(existing_player=None):
                 enemy_objects.append(enemy_class(position[0], position[1], enemy_type))
                 maze = add_zone(rows, cols, maze, position[0], position[1])  # Add safe zone
 
+    tile_map = generate_tiles(maze)
     camera = Camera(WIDTH, HEIGHT, rows, cols)
 
-    return player, enemy_objects, maze, door_positions, keys, camera
+    return player, enemy_objects, maze, rows, cols, tile_map, door_positions, keys, camera
 
 def get_enemies(player):
     # Filter eligible enemies based on the player's floor
@@ -122,11 +114,14 @@ def get_enemies(player):
     return enemies
 
 def game_loop():
-    player, enemy_objects, maze, door_positions, keys, camera = start_mechanics()   # Start summoning player and enemies
-    tile_map = generate_tiles(maze)
+    player, enemy_objects, maze, rows, cols, tile_map, door_positions, keys, camera = start_mechanics()   # Start summoning player and enemies
+    active_powerups = []
+    powerup_cooldown = 0
     game_over = False
     game_over_start_time = None
+
     clock = pygame.time.Clock()
+    pygame.time.set_timer(POWERUP_SPAWN_EVENT, INIT_POWERUP_SPAWN_COOLDOWN * 1000)
 
     running = True
     while running:
@@ -139,6 +134,10 @@ def game_loop():
                 toggle_door(maze, door_positions, 'locked')
                 player.maze_interaction_triggered = True
                 pygame.time.set_timer(DOOR_LOCK_EVENT, 0)
+            elif event.type == POWERUP_SPAWN_EVENT:
+                if len(active_powerups) < MAX_POWERUPS:
+                    new_powerup = generate_powerups(maze, player.safe_zone_pos[0], player.safe_zone_pos[1], active_powerups, POWERUP_CLASSES)
+                    active_powerups.append(new_powerup)
         
         # If game over, wait for 2 seconds and show game over screen
         if game_over:
@@ -154,7 +153,7 @@ def game_loop():
                 player.floor_up_start_time = time.time()
             elif time.time() - player.floor_up_start_time >= 1:
                 player.floor_up()
-                player, enemy_objects, maze, door_positions, keys, camera = start_mechanics(player)
+                player, enemy_objects, maze, rows, cols, door_positions, keys, camera = start_mechanics(player)
                 tile_map = generate_tiles(maze)
         else:
             player.floor_up_start_time = None
@@ -170,8 +169,18 @@ def game_loop():
         if key_binds[pygame.K_d] or key_binds[pygame.K_RIGHT]:
             player.move(1, 0, maze)
 
+        # Activate powerup on pressing E key if cooldown is over
+        if key_binds[pygame.K_e] and player.has_powerup and powerup_cooldown <= 0:
+            active_powerups.remove(player.current_powerup)
+            player.activate_powerup(enemy_objects)
+            powerup_cooldown = INIT_POWERUP_ACTIVATE_COOLDOWN  # 2.5 seconds cooldown
+
+        # Update cooldown for powerup activation
+        if powerup_cooldown > 0:
+            powerup_cooldown -= delta_time
+
         # Update player and enemy with time delta
-        player.update_position(delta_time, door_positions, keys, maze)
+        player.update_position(delta_time, door_positions, keys, active_powerups, maze)
         player.update_timer(delta_time)
 
         # Update enemy movement
@@ -196,7 +205,9 @@ def game_loop():
         for key in keys:
             if not key.collected:
                 key.draw(WIN, camera)
-        
+        for powerup in active_powerups:
+            if not powerup.collected:
+                powerup.draw(WIN, camera)
         player.draw(WIN, camera)
         for enemy in enemy_objects:
             enemy.draw(WIN, camera)

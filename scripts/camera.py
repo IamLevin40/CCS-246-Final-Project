@@ -8,7 +8,7 @@ class Camera:
         self.camera = pygame.Rect(0, 0, width, height)
         self.width = width
         self.height = height
-        self.smoothness = 0.4  # Controls how fast the camera moves in pixels per second
+        self.smoothness = 0.5  # Controls how fast the camera moves in pixels per second
         
         # Maximum distance the camera will "peek" at the player based on screen dimensions
         self.max_offset_x = self.width // 2

@@ -3,7 +3,7 @@
 import pygame
 
 # Display settings
-WIDTH, HEIGHT = 960, 640
+WIDTH, HEIGHT = 800, 600
 TILE_SIZE = 16  # Size of each tile in pixels
 INIT_ROWS, INIT_COLS = 33, 33
 PORTAL_STRUCTURE_SIZE = 3
@@ -16,7 +16,7 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 DARK_GREEN = (50, 190, 50)
-FLOOR_BG_COLOR = (248, 24, 87)
+FLOOR_BG_COLOR = (254, 80, 109)
 TIMER_BG_COLOR = (248, 199, 24)
 
 # Paths to sprite images
@@ -150,39 +150,49 @@ STRUCTURE_PORTAL_TILE_SPRITES = {
     "adjacent": "sprites/structure_tiles/portal/adjacent.png"
 }
 
+POWERUP_SPRITES = {
+    "rocket_boost": "sprites/powerups/rocket_boost.png",
+    "retreat": "sprites/powerups/retreat.png",
+    "immunity": "sprites/powerups/immunity.png",
+    "slow_move": "sprites/powerups/slow_move.png"
+}
+
 # Initial attributes
 INIT_TIMER = 60
 INIT_MIN_BONUS_LIMIT = 30
 INIT_SPEED_PLAYER = 100.0
 ENEMIES = {
     "pursuer": {
-        "init_speed": 5.6,
+        "init_speed": 6.0,
         "sprites": PURSUER_SPRITES
     },
     "feigner": {
-        "init_speed": 5.6,
+        "init_speed": 6.0,
         "sprites": FEIGNER_SPRITES
     },
     "glimmer": {
-        "init_speed": 5.6,
+        "init_speed": 6.0,
         "sprites": GLIMMER_SPRITES
     },
     "ambusher": {
-        "init_speed": 5.6,
+        "init_speed": 6.0,
         "sprites": AMBUSHER_SPRITES
     },
     "specter": {
-        "init_speed": 5.6,
+        "init_speed": 6.0,
         "sprites": SPECTER_SPRITES
     },
     "slender": {
-        "init_speed": 5.6,
+        "init_speed": 6.0,
         "sprites": SLENDER_SPRITES
     }
 }
 INIT_MAX_ENEMIES = 3
 MAX_FLOOR_TO_INCREASE_MAX_ENEMIES = 3
 MAX_FLOOR_TO_INCREASE_MAZE_SIZE = 1
+INIT_POWERUP_SPAWN_COOLDOWN = 2
+INIT_POWERUP_ACTIVATE_COOLDOWN = 10
+MAX_POWERUPS = 4
 
 # Initialize Pygame
 pygame.init()

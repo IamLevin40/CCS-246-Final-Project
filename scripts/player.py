@@ -4,18 +4,24 @@ import pygame
 from settings import *
 from utils import *
 from key import *
+from powerup import *
 
 class Player:
     def __init__(self, x, y, speed):
         self.x, self.y = x, y
         self.speed = speed
+        self.speed_multiplier = 1.0
         self.has_key = False
         self.key_is_real = False
+        self.has_powerup = False
+        self.current_powerup = False
         self.maze_interaction_triggered = False
-        self.is_immune = False
+        self.is_immune = True
+        self.can_collect = True
         self.floor = 1
 
         self.float_x, self.float_y = x, y
+        self.safe_zone_pos = (x, y)
         self.start_pos = (x, y)
         self.target_pos = (x, y)
         self.current_tile = ''
@@ -90,19 +96,19 @@ class Player:
             self.float_x, self.float_y = self.x, self.y
             self.is_moving = False
 
-    def update_position(self, delta_time, door_positions, keys, maze):
+    def update_position(self, delta_time, door_positions, keys, active_powerups, maze):
         if self.is_moving:
             # Calculate the movement step
-            move_distance = delta_time * self.speed
+            move_distance = delta_time * (self.speed * self.speed_multiplier)
             total_distance = TILE_SIZE
 
             # Update float positions based on direction
             dx, dy = self.current_direction
-            self.float_x += dx * move_distance / total_distance
-            self.float_y += dy * move_distance / total_distance
+            self.float_x += dx * round((move_distance / total_distance), 2)
+            self.float_y += dy * round((move_distance / total_distance), 2)
 
             # Check if we reached the target tile
-            if abs(self.float_x - self.target_pos[0]) < 0.1 and abs(self.float_y - self.target_pos[1]) < 0.1:
+            if abs(self.float_x - self.target_pos[0]) < 0.125 and abs(self.float_y - self.target_pos[1]) < 0.125:
                 self.float_x, self.float_y = self.target_pos
                 self.x, self.y = self.target_pos
                 self.is_moving = False
@@ -123,6 +129,7 @@ class Player:
 
         # Check for key collection and door
         check_key_collection(self, keys)
+        check_powerup_collection(self, active_powerups)
         check_door_unlock(self, door_positions, maze)
     
     def update_frame(self, delta_time):
@@ -148,7 +155,7 @@ class Player:
 
     def calculate_bonus_time(self):
         # Calculate the bonus time using the given formula
-        return self.bonus_time - ((self.init_time / self.min_bonus_limit) / 2) + ((self.floor - 1) * 0.1)
+        return self.bonus_time - (((self.init_time / self.min_bonus_limit) / 2) + ((self.floor - 1) * 0.1))
 
     def floor_up(self):
         # Handles player increasing floor
@@ -164,5 +171,22 @@ class Player:
             self.bonus_time = self.min_bonus_limit
         
         self.timer += self.bonus_time
-
         self.floor_up_start_time = None
+    
+    def activate_powerup(self, enemies):
+        self.current_powerup.activate(self, enemies)
+        self.has_powerup = False
+        self.current_powerup = None
+    
+    def teleport_to_safe_zone(self):
+        # Update the player's position to the safe zone
+        self.x, self.y = self.safe_zone_pos
+        self.float_x, self.float_y = self.safe_zone_pos
+
+        # Update the player's rect for rendering
+        self.rect.topleft = (int(self.x * TILE_SIZE), int(self.y * TILE_SIZE))
+
+        # Stop any ongoing movement
+        self.is_moving = False
+        self.current_direction = None
+        self.requested_direction = None
