@@ -28,7 +28,7 @@ def start_mechanics(existing_player=None):
         player.x, player.y = rows // 2, cols // 2  # Reset player position
         player.float_x, player.float_y = player.x, player.y
         player.target_pos = (player.x, player.y)
-        # player.current_tile = ''
+        player.current_tile = ''
     else:
         # Player spawns in the center of the player safe zone
         player = Player(rows // 2, cols // 2, INIT_SPEED_PLAYER)
@@ -68,7 +68,7 @@ def start_mechanics(existing_player=None):
     tile_map = generate_tiles(maze)
     camera = Camera(WIDTH, HEIGHT, rows, cols)
 
-    return player, enemy_objects, maze, rows, cols, tile_map, door_positions, keys, camera
+    return player, enemy_objects, maze, tile_map, door_positions, keys, camera
 
 def get_enemies(player):
     # Filter eligible enemies based on the player's floor
@@ -114,7 +114,7 @@ def get_enemies(player):
     return enemies
 
 def game_loop():
-    player, enemy_objects, maze, rows, cols, tile_map, door_positions, keys, camera = start_mechanics()   # Start summoning player and enemies
+    player, enemy_objects, maze, tile_map, door_positions, keys, camera = start_mechanics()   # Start summoning player and enemies
     active_powerups = []
     powerup_cooldown = 0
     game_over = False
@@ -153,8 +153,8 @@ def game_loop():
                 player.floor_up_start_time = time.time()
             elif time.time() - player.floor_up_start_time >= 1:
                 player.floor_up()
-                player, enemy_objects, maze, rows, cols, door_positions, keys, camera = start_mechanics(player)
-                tile_map = generate_tiles(maze)
+                player, enemy_objects, maze, tile_map, door_positions, keys, camera = start_mechanics(player)
+                active_powerups.clear()
         else:
             player.floor_up_start_time = None
 
@@ -169,11 +169,15 @@ def game_loop():
         if key_binds[pygame.K_d] or key_binds[pygame.K_RIGHT]:
             player.move(1, 0, maze)
 
-        # Activate powerup on pressing E key if cooldown is over
-        if key_binds[pygame.K_e] and player.has_powerup and powerup_cooldown <= 0:
+        # Activate powerup on pressing E or , key if cooldown is over
+        if (key_binds[pygame.K_e] or key_binds[pygame.K_COMMA])and player.has_powerup and powerup_cooldown <= 0:
             active_powerups.remove(player.current_powerup)
             player.activate_powerup(enemy_objects)
-            powerup_cooldown = INIT_POWERUP_ACTIVATE_COOLDOWN  # 2.5 seconds cooldown
+            powerup_cooldown = INIT_POWERUP_ACTIVATE_COOLDOWN 
+        
+        # Check door on pressing R or . key
+        if key_binds[pygame.K_r] or key_binds[pygame.K_PERIOD]:
+            check_door_unlock(player, door_positions, maze)
 
         # Update cooldown for powerup activation
         if powerup_cooldown > 0:
@@ -198,6 +202,13 @@ def game_loop():
             tile_map = generate_tiles(maze)
             player.maze_interaction_triggered = False
 
+        # Get current powerup type if available
+        powerup_type = None 
+        powerup_name = None
+        if player.current_powerup is not None:
+            powerup_type = player.current_powerup.type
+            powerup_name = player.current_powerup.name
+
         camera.follow((player.x, player.y), delta_time)
         WIN.fill(PATH_COLOR)
 
@@ -213,6 +224,8 @@ def game_loop():
             enemy.draw(WIN, camera)
 
         display_player_stats(player.floor, player.timer)
+        display_inventory(player.has_key, powerup_type, powerup_name, powerup_cooldown)
+        display_movement_keybinds()
         pygame.display.update()
 
     pygame.quit()

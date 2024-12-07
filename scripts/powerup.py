@@ -2,16 +2,15 @@
 
 import pygame, random, math, threading
 from settings import *
-from utils import *
 from maze import *
 
-POWERUP_OBJECTS = {name: split_and_resize_sprite(path, TILE_SIZE)[0] for name, path in POWERUP_SPRITES.items()}
 POWERUP_SPAWN_EVENT = pygame.USEREVENT + 2 
 
 class Powerup:
-    def __init__(self, x, y, type, duration):
+    def __init__(self, x, y, name, type, duration):
         self.x = x
         self.y = y
+        self.name = name
         self.type = type
         self.duration = duration
         self.collected = False
@@ -29,7 +28,7 @@ class Powerup:
 
 class RocketBoost(Powerup):
     def __init__(self, x, y):
-        super().__init__(x, y, "rocket_boost", 4.0)
+        super().__init__(x, y, "Rocket Boost", "rocket_boost", 4.0)
 
     def activate(self, player, enemies):
         player.speed_multiplier += 0.5
@@ -40,7 +39,7 @@ class RocketBoost(Powerup):
 
 class Retreat(Powerup):
     def __init__(self, x, y):
-        super().__init__(x, y, "retreat", 2.5)
+        super().__init__(x, y, "Retreat", "retreat", 2.5)
 
     def activate(self, player, enemies):
         player.speed_multiplier -= 0.75
@@ -52,7 +51,7 @@ class Retreat(Powerup):
 
 class Immunity(Powerup):
     def __init__(self, x, y):
-        super().__init__(x, y, "immunity", 5.0)
+        super().__init__(x, y, "Immunity", "immunity", 5.0)
 
     def activate(self, player, enemies):
         player.is_immune = True
@@ -65,7 +64,7 @@ class Immunity(Powerup):
 
 class SlowMove(Powerup):
     def __init__(self, x, y):
-        super().__init__(x, y, "slow_move", 5.0)
+        super().__init__(x, y, "Slow Move", "slow_move", 5.0)
 
     def activate(self, player, enemies):
         for enemy in enemies:
@@ -121,7 +120,7 @@ def generate_powerups(maze, center_x, center_y, active_powerups, powerup_classes
 def check_powerup_collection(player, powerups):
     # Check if the player can collect a powerup
     for powerup in powerups:
-        if not powerup.collected and player.x == powerup.x and player.y == powerup.y and not player.has_powerup:
+        if not powerup.collected and player.x == powerup.x and player.y == powerup.y and not player.has_powerup and player.can_collect:
             player.current_powerup = powerup
             player.has_powerup = True
             powerup.collected = True

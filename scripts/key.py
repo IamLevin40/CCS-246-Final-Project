@@ -2,10 +2,8 @@
 
 import pygame, random, math
 from settings import *
-from utils import *
 from maze import *
 
-KEY_OBJECTS = {state: split_and_resize_sprite(path, TILE_SIZE)[0] for state, path in KEY_SPRITES.items()}
 DOOR_LOCK_EVENT = pygame.USEREVENT + 1
 
 class Key:
@@ -73,7 +71,7 @@ def generate_keys(maze, center_x, center_y, num_keys=4):
 def check_key_collection(player, keys):
     # Check if the player can collect a key
     for key in keys:
-        if not key.collected and player.x == key.x and player.y == key.y and player.has_key == False:
+        if not key.collected and player.x == key.x and player.y == key.y and player.has_key == False and player.can_collect:
             player.has_key = True
             player.key_is_real = key.is_real
             key.collected = True

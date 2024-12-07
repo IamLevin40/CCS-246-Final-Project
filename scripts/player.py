@@ -14,11 +14,12 @@ class Player:
         self.has_key = False
         self.key_is_real = False
         self.has_powerup = False
-        self.current_powerup = False
-        self.maze_interaction_triggered = False
+        self.current_powerup = None
+        self.active_powerups = None
         self.is_immune = True
         self.can_collect = True
         self.floor = 1
+        self.maze_interaction_triggered = False
 
         self.float_x, self.float_y = x, y
         self.safe_zone_pos = (x, y)
@@ -130,7 +131,6 @@ class Player:
         # Check for key collection and door
         check_key_collection(self, keys)
         check_powerup_collection(self, active_powerups)
-        check_door_unlock(self, door_positions, maze)
     
     def update_frame(self, delta_time):
         self.animation_timer += delta_time

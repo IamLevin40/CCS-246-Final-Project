@@ -2,17 +2,6 @@
 
 import pygame, random
 from settings import *
-from utils import *
-
-PATH_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in PATH_TILE_SPRITES.items()}
-WALL_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in WALL_TILE_SPRITES.items()}
-DOOR_TILES = {
-    state: {pattern: split_and_resize_sprite(path, TILE_SIZE) 
-            for pattern, path in patterns.items()}
-    for state, patterns in DOOR_TILE_SPRITES.items()
-}
-STRUCTURE_FLOOR_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in STRUCTURE_FLOOR_TILE_SPRITES.items()}
-STRUCTURE_PORTAL_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in STRUCTURE_PORTAL_TILE_SPRITES.items()}
 
 FOUR_DIRECTIONS = ['up', 'right', 'down', 'left']
 ALL_DIRECTIONS = ['up', 'up_right', 'right', 'down_right', 'down', 'down_left', 'left', 'up_left']

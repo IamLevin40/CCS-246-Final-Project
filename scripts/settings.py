@@ -1,9 +1,11 @@
 # settings.py
 
 import pygame
+from utils import *
+
 
 # Display settings
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 960, 640
 TILE_SIZE = 16  # Size of each tile in pixels
 INIT_ROWS, INIT_COLS = 33, 33
 PORTAL_STRUCTURE_SIZE = 3
@@ -18,6 +20,15 @@ GREEN = (0, 255, 0)
 DARK_GREEN = (50, 190, 50)
 FLOOR_BG_COLOR = (254, 80, 109)
 TIMER_BG_COLOR = (248, 199, 24)
+
+# Initialize Pygame
+pygame.init()
+WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Dungeon Labyrinth")
+
+# Frame rate
+FPS = 60
+
 
 # Paths to sprite images
 PLAYER_SPRITES = {
@@ -156,6 +167,36 @@ POWERUP_SPRITES = {
     "immunity": "sprites/powerups/immunity.png",
     "slow_move": "sprites/powerups/slow_move.png"
 }
+KEYPAD_SPRITES = {
+    "keypad_w": "sprites/keypads/keypad_w.png",
+    "keypad_a": "sprites/keypads/keypad_a.png",
+    "keypad_s": "sprites/keypads/keypad_s.png",
+    "keypad_d": "sprites/keypads/keypad_d.png",
+    "keypad_e": "sprites/keypads/keypad_e.png",
+    "keypad_r": "sprites/keypads/keypad_r.png"
+}
+UI_ICON_SPRITES = {
+    "inventory_holder": "sprites/ui_icons/inventory_holder.png",
+    "stats_holder": "sprites/ui_icons/stats_holder.png",
+    "floor": "sprites/ui_icons/floor.png",
+    "clock": "sprites/ui_icons/clock.png"
+}
+
+PATH_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in PATH_TILE_SPRITES.items()}
+WALL_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in WALL_TILE_SPRITES.items()}
+DOOR_TILES = {
+    state: {pattern: split_and_resize_sprite(path, TILE_SIZE) 
+            for pattern, path in patterns.items()}
+    for state, patterns in DOOR_TILE_SPRITES.items()
+}
+STRUCTURE_FLOOR_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in STRUCTURE_FLOOR_TILE_SPRITES.items()}
+STRUCTURE_PORTAL_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in STRUCTURE_PORTAL_TILE_SPRITES.items()}
+
+KEY_OBJECTS = {state: split_and_resize_sprite(path, TILE_SIZE)[0] for state, path in KEY_SPRITES.items()}
+POWERUP_OBJECTS = {name: split_and_resize_sprite(path, TILE_SIZE)[0] for name, path in POWERUP_SPRITES.items()}
+KEYPAD_OBJECTS = {name: split_and_resize_sprite(path) for name, path in KEYPAD_SPRITES.items()}
+UI_ICON_OBJECTS = {name: split_and_resize_sprite(path) for name, path in UI_ICON_SPRITES.items()}
+
 
 # Initial attributes
 INIT_TIMER = 60
@@ -190,14 +231,6 @@ ENEMIES = {
 INIT_MAX_ENEMIES = 3
 MAX_FLOOR_TO_INCREASE_MAX_ENEMIES = 3
 MAX_FLOOR_TO_INCREASE_MAZE_SIZE = 1
-INIT_POWERUP_SPAWN_COOLDOWN = 2
-INIT_POWERUP_ACTIVATE_COOLDOWN = 10
+INIT_POWERUP_SPAWN_COOLDOWN = 8
+INIT_POWERUP_ACTIVATE_COOLDOWN = 2.5
 MAX_POWERUPS = 4
-
-# Initialize Pygame
-pygame.init()
-WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Dungeon Labyrinth")
-
-# Frame rate
-FPS = 60
