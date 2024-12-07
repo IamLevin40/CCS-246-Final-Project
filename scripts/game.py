@@ -232,7 +232,7 @@ def game_loop():
 
 def check_collision(player, enemies):
     # Check if any enemy has collided with the player
-    buffer = 10
+    buffer = 8
     player_rect = player.rect.inflate(-buffer, -buffer)
     for enemy in enemies:
         # Create a smaller collision box for each enemy

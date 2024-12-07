@@ -20,12 +20,13 @@ class EnemyAI:
         self.speed = ENEMIES[enemy_type]["init_speed"]
         self.speed_multiplier = 1.0
         self.animations = {
-            state: split_and_resize_sprite(path, TILE_SIZE)
+            state: split_and_resize_sprite(path)
             for state, path in ENEMIES[enemy_type]["sprites"].items()
         }
         
         # Load animation states
-        self.current_state = "rest"  # Start in resting state
+        self.current_state = "right"  # Start in default state
+        self.previous_state = self.current_state
         self.frame_index = 0
         self.animation_timer = 0
         self.animation_speed = 0.1  # Time per frame in seconds
@@ -105,6 +106,10 @@ class EnemyAI:
                 self.current_state = "down"
             elif self.target_pos[1] < self.float_y:
                 self.current_state = "up"
+            
+            if self.previous_state is not self.current_state:
+                self.frame_index = 0
+                self.previous_state = self.current_state
 
         # Update rect for rendering
         self.rect.topleft = (int(self.float_x * TILE_SIZE), int(self.float_y * TILE_SIZE))
@@ -122,6 +127,7 @@ class EnemyAI:
         # Adjust position by camera and draw enemy
         adjusted_rect = camera.apply(self)
         current_frame = self.animations[self.current_state][self.frame_index]
+        adjusted_rect = adjusted_rect.move(-current_frame.get_width() // 4, (-current_frame.get_height() // 4) - 8)
         win.blit(current_frame, adjusted_rect)
 
 
@@ -233,11 +239,11 @@ class Specter(EnemyAI):
             # If doubled speed is active, target last visited position
             target = self.last_visited_position
             self.speed = self.double_speed
+            self.current_state = "special"  # Set state to special
             # Check if the active duration has passed
             if (self.x, self.y) == self.last_visited_position or (current_time - self.active_timer) >= self.active_duration:
                 self.is_doubled_speed_active = False
                 self.cooldown_timer = current_time  # Start cooldown
-                
         else:
             # If not in doubled speed mode, move towards player at half speed
             target = (player.x, player.y)
@@ -249,6 +255,16 @@ class Specter(EnemyAI):
                 # Record the player's last position
                 self.last_visited_position = (player.x, player.y)
                 self.last_visited_time = current_time
+
+            # Reset to directional states
+            if self.target_pos[0] > self.float_x:
+                self.current_state = "right"
+            elif self.target_pos[0] < self.float_x:
+                self.current_state = "left"
+            elif self.target_pos[1] > self.float_y:
+                self.current_state = "down"
+            elif self.target_pos[1] < self.float_y:
+                self.current_state = "up"
 
         super().move(target, maze, delta_time)
 
@@ -264,8 +280,20 @@ class Slender(EnemyAI):
 
         # Enable or disable wall pass based on distance
         self.wall_pass_enabled = distance > self.wall_pass_threshold
+        if self.wall_pass_enabled:
+            self.current_state = "special"  # Set state to special
+        else:
+            # Reset to directional states
+            if self.target_pos[0] > self.float_x:
+                self.current_state = "right"
+            elif self.target_pos[0] < self.float_x:
+                self.current_state = "left"
+            elif self.target_pos[1] > self.float_y:
+                self.current_state = "down"
+            elif self.target_pos[1] < self.float_y:
+                self.current_state = "up"
 
-        target = (player.x, player.y)  
+        target = (player.x, player.y)
         super().move(target, maze, delta_time, self.wall_pass_enabled)
 
 

@@ -21,14 +21,14 @@ def title_screen():
         WIN.fill(PATH_COLOR)  # Clear the window with a white background
 
         # Render title text
-        font = pygame.font.Font(None, 64)  # Use a default font with size 64
-        title_surface = font.render("Dungeon Labyrinth", True, WHITE)
+        title_font = pygame.font.Font(FONTS["colonna"], 64)  # Use a default font with size 64
+        title_surface = title_font.render("Dungeon Labyrinth", True, WHITE)
         title_rect = title_surface.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))
         WIN.blit(title_surface, title_rect)  # Draw the title
 
         # Draw the play button
         pygame.draw.rect(WIN, button_color, button_rect)  # Draw the button
-        button_font = pygame.font.Font(None, 36)
+        button_font = pygame.font.Font(FONTS["colonna"], 36)
         button_surface = button_font.render("Play", True, WHITE)  # Button text color
         button_text_rect = button_surface.get_rect(center=button_rect.center)
         WIN.blit(button_surface, button_text_rect)  # Draw the button text
@@ -104,8 +104,8 @@ def display_player_stats(floor, timer=0):
     clock_icon_image = pygame.transform.scale(clock_icon_image, icon_size)
 
     # Define font settings
-    label_font = pygame.font.Font(None, 14)
-    value_font = pygame.font.Font(None, 28)
+    label_font = pygame.font.Font(FONTS["colonna"], 12)
+    value_font = pygame.font.Font(FONTS["colonna"], 24)
     value_font.set_bold(True)
 
     # Render the texts for labels and values
@@ -135,11 +135,11 @@ def display_player_stats(floor, timer=0):
 
     # Text alignment inside the stats holders
     text_padding = icon_padding + icon_size[0] + 10  # Space for the icon and padding
-    floor_label_pos = (floor_box_pos[0] + text_padding, floor_box_pos[1] + 10)
-    floor_value_pos = (floor_box_pos[0] + text_padding, floor_box_pos[1] + 20)
+    floor_label_pos = (floor_box_pos[0] + text_padding, floor_box_pos[1] + 8)
+    floor_value_pos = (floor_box_pos[0] + text_padding, floor_box_pos[1] + 16)
 
-    timer_label_pos = (timer_box_pos[0] + text_padding, timer_box_pos[1] + 10)
-    timer_value_pos = (timer_box_pos[0] + text_padding, timer_box_pos[1] + 20)
+    timer_label_pos = (timer_box_pos[0] + text_padding, timer_box_pos[1] + 8)
+    timer_value_pos = (timer_box_pos[0] + text_padding, timer_box_pos[1] + 16)
 
     # Render the texts in the boxes
     WIN.blit(floor_label_text, floor_label_pos)
@@ -150,9 +150,9 @@ def display_player_stats(floor, timer=0):
 
 def display_inventory(has_key, powerup_type=None, powerup_name="", powerup_cooldown=0):
     # Define fonts for cooldown text and powerup name
-    cooldown_font = pygame.font.Font(None, 20)
+    cooldown_font = pygame.font.Font(FONTS["colonna"], 18)
     cooldown_font.set_bold(True)
-    name_font = pygame.font.Font(None, 16)
+    name_font = pygame.font.Font(FONTS["colonna"], 14)
     name_font.set_bold(True)
 
     # Load holder and keypad images
@@ -173,7 +173,7 @@ def display_inventory(has_key, powerup_type=None, powerup_name="", powerup_coold
     bottom_padding = HEIGHT - holder_size - 40  # Padding from the bottom
     holder1_x = (WIDTH // 2) - holder_size - box_padding
     holder2_x = (WIDTH // 2) + box_padding
-    keypad_y = bottom_padding + holder_size
+    keypad_y = bottom_padding + holder_size + 2
 
     # Draw inventory holders
     WIN.blit(holder_image, (holder1_x, bottom_padding))
@@ -218,7 +218,7 @@ def display_inventory(has_key, powerup_type=None, powerup_name="", powerup_coold
 
 def display_movement_keybinds():
     # Define fonts for the title
-    title_font = pygame.font.Font(None, 18)
+    title_font = pygame.font.Font(FONTS["colonna"], 14)
     title_font.set_bold(True)
 
     # Load keypad images

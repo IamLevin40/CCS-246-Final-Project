@@ -42,10 +42,10 @@ class Player:
         
         # Load animations for each state
         self.animations = {
-            state: split_and_resize_sprite(path, TILE_SIZE) 
+            state: split_and_resize_sprite(path) 
             for state, path in PLAYER_SPRITES.items()
         }
-        self.current_state = "rest"  # Start in resting state
+        self.current_state = "right"  # Start in default state
         self.frame_index = 0
         self.animation_timer = 0
         self.animation_speed = 0.1  # Time per frame in seconds
@@ -145,6 +145,7 @@ class Player:
         # Adjust position by camera and draw player
         adjusted_rect = camera.apply(self)
         current_frame = self.animations[self.current_state][self.frame_index]
+        adjusted_rect = adjusted_rect.move(-current_frame.get_width() // 4, (-current_frame.get_height() // 4) - 8)
         win.blit(current_frame, adjusted_rect)
 
     def update_timer(self, delta_time):

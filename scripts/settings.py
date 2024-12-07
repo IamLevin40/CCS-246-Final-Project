@@ -29,10 +29,13 @@ pygame.display.set_caption("Dungeon Labyrinth")
 # Frame rate
 FPS = 60
 
+# Paths to resources
+FONTS = {
+    "colonna": "resources/fonts/colonna.ttf"
+}
 
 # Paths to sprite images
 PLAYER_SPRITES = {
-    "rest": "sprites/player/rest.png",
     "up": "sprites/player/up.png",
     "down": "sprites/player/down.png",
     "left": "sprites/player/left.png",
@@ -40,7 +43,6 @@ PLAYER_SPRITES = {
 }
 
 PURSUER_SPRITES = {
-    "rest": "sprites/enemies/pursuer/rest.png",
     "up": "sprites/enemies/pursuer/up.png",
     "down": "sprites/enemies/pursuer/down.png",
     "left": "sprites/enemies/pursuer/left.png",
@@ -48,7 +50,6 @@ PURSUER_SPRITES = {
 }
 
 FEIGNER_SPRITES = {
-    "rest": "sprites/enemies/feigner/rest.png",
     "up": "sprites/enemies/feigner/up.png",
     "down": "sprites/enemies/feigner/down.png",
     "left": "sprites/enemies/feigner/left.png",
@@ -56,7 +57,6 @@ FEIGNER_SPRITES = {
 }
 
 AMBUSHER_SPRITES = {
-    "rest": "sprites/enemies/ambusher/rest.png",
     "up": "sprites/enemies/ambusher/up.png",
     "down": "sprites/enemies/ambusher/down.png",
     "left": "sprites/enemies/ambusher/left.png",
@@ -64,7 +64,6 @@ AMBUSHER_SPRITES = {
 }
 
 GLIMMER_SPRITES = {
-    "rest": "sprites/enemies/glimmer/rest.png",
     "up": "sprites/enemies/glimmer/up.png",
     "down": "sprites/enemies/glimmer/down.png",
     "left": "sprites/enemies/glimmer/left.png",
@@ -72,19 +71,19 @@ GLIMMER_SPRITES = {
 }
 
 SPECTER_SPRITES = {
-    "rest": "sprites/enemies/specter/rest.png",
     "up": "sprites/enemies/specter/up.png",
     "down": "sprites/enemies/specter/down.png",
     "left": "sprites/enemies/specter/left.png",
-    "right": "sprites/enemies/specter/right.png"
+    "right": "sprites/enemies/specter/right.png",
+    "special": "sprites/enemies/specter/special.png"
 }
 
 SLENDER_SPRITES = {
-    "rest": "sprites/enemies/slender/rest.png",
     "up": "sprites/enemies/slender/up.png",
     "down": "sprites/enemies/slender/down.png",
     "left": "sprites/enemies/slender/left.png",
-    "right": "sprites/enemies/slender/right.png"
+    "right": "sprites/enemies/slender/right.png",
+    "special": "sprites/enemies/slender/special.png"
 }
 
 PATH_TILE_SPRITES = {
@@ -176,6 +175,10 @@ KEYPAD_SPRITES = {
     "keypad_r": "sprites/keypads/keypad_r.png"
 }
 UI_ICON_SPRITES = {
+    "title_screen_bg": "sprites/ui_icons/title_screen_bg.png",
+    "start_button": "sprites/ui_icons/start_button.png",
+    "exit_button": "sprites/ui_icons/exit_button.png",
+    "hover_icon": "sprites/ui_icons/hover_icon.png",
     "inventory_holder": "sprites/ui_icons/inventory_holder.png",
     "stats_holder": "sprites/ui_icons/stats_holder.png",
     "floor": "sprites/ui_icons/floor.png",
@@ -229,7 +232,7 @@ ENEMIES = {
     }
 }
 INIT_MAX_ENEMIES = 3
-MAX_FLOOR_TO_INCREASE_MAX_ENEMIES = 3
+MAX_FLOOR_TO_INCREASE_MAX_ENEMIES = 1
 MAX_FLOOR_TO_INCREASE_MAZE_SIZE = 1
 INIT_POWERUP_SPAWN_COOLDOWN = 8
 INIT_POWERUP_ACTIVATE_COOLDOWN = 2.5
