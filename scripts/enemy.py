@@ -123,11 +123,11 @@ class EnemyAI:
             self.animation_timer = 0
             self.frame_index = (self.frame_index + 1) % len(frames)
 
-    def draw(self, win, camera):
+    def draw(self, win, camera, offset_y):
         # Adjust position by camera and draw enemy
         adjusted_rect = camera.apply(self)
         current_frame = self.animations[self.current_state][self.frame_index]
-        adjusted_rect = adjusted_rect.move(-current_frame.get_width() // 4, (-current_frame.get_height() // 4) - 8)
+        adjusted_rect = adjusted_rect.move(-current_frame.get_width() // 4, (-current_frame.get_height() // 4) + offset_y)
         win.blit(current_frame, adjusted_rect)
 
 
@@ -239,7 +239,7 @@ class Specter(EnemyAI):
             # If doubled speed is active, target last visited position
             target = self.last_visited_position
             self.speed = self.double_speed
-            self.current_state = "special"  # Set state to special
+            self.current_state = "special"
             # Check if the active duration has passed
             if (self.x, self.y) == self.last_visited_position or (current_time - self.active_timer) >= self.active_duration:
                 self.is_doubled_speed_active = False
@@ -281,7 +281,7 @@ class Slender(EnemyAI):
         # Enable or disable wall pass based on distance
         self.wall_pass_enabled = distance > self.wall_pass_threshold
         if self.wall_pass_enabled:
-            self.current_state = "special"  # Set state to special
+            self.current_state = "special"
         else:
             # Reset to directional states
             if self.target_pos[0] > self.float_x:

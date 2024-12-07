@@ -14,24 +14,44 @@ def draw_maze(maze, camera, tile_map):
 
 def title_screen():
     running = True
-    button_color = DARK_GREEN  # Green color for the button
-    button_rect = pygame.Rect(WIDTH // 2 - 50, HEIGHT // 2, 100, 50)  # Button rectangle
+    
+    # Load and scale UI sprites
+    bg_image = pygame.image.load(UI_ICON_SPRITES["title_screen_bg"]).convert()
+    bg_image = pygame.transform.scale(bg_image, (WIDTH, HEIGHT))  # Scale to fit screen
+
+    button_width, button_height = 180, 90  # Target dimensions for buttons
+    start_button_image = pygame.image.load(UI_ICON_SPRITES["start_button"]).convert_alpha()
+    start_button_image = pygame.transform.scale(start_button_image, (button_width, button_height))
+    exit_button_image = pygame.image.load(UI_ICON_SPRITES["exit_button"]).convert_alpha()
+    exit_button_image = pygame.transform.scale(exit_button_image, (button_width, button_height))
+
+    hover_icon_image = pygame.image.load(UI_ICON_SPRITES["hover_icon"]).convert_alpha()
+    hover_icon_image = pygame.transform.scale(hover_icon_image, (button_width * 1.6, button_height * 1.6))
+
+    # Button positions
+    start_button_rect = pygame.Rect(WIDTH // 2 + 140, HEIGHT // 2 - 100, button_width, button_height)
+    exit_button_rect = pygame.Rect(WIDTH // 2 + 140, HEIGHT // 2 + 20, button_width, button_height)
+    hover_icon_rect = hover_icon_image.get_rect()
 
     while running:
-        WIN.fill(PATH_COLOR)  # Clear the window with a white background
+        WIN.blit(bg_image, (0, 0))  # Draw background image
+        
+        # Draw buttons
+        WIN.blit(start_button_image, start_button_rect)
+        WIN.blit(exit_button_image, exit_button_rect)
 
-        # Render title text
-        title_font = pygame.font.Font(FONTS["colonna"], 64)  # Use a default font with size 64
-        title_surface = title_font.render("Dungeon Labyrinth", True, WHITE)
-        title_rect = title_surface.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))
-        WIN.blit(title_surface, title_rect)  # Draw the title
+        # Get mouse position
+        mouse_pos = pygame.mouse.get_pos()
 
-        # Draw the play button
-        pygame.draw.rect(WIN, button_color, button_rect)  # Draw the button
-        button_font = pygame.font.Font(FONTS["colonna"], 36)
-        button_surface = button_font.render("Play", True, WHITE)  # Button text color
-        button_text_rect = button_surface.get_rect(center=button_rect.center)
-        WIN.blit(button_surface, button_text_rect)  # Draw the button text
+        # Handle hover effects for start button
+        if start_button_rect.collidepoint(mouse_pos):
+            hover_icon_rect.center = start_button_rect.center
+            WIN.blit(hover_icon_image, hover_icon_rect)
+
+        # Handle hover effects for exit button
+        elif exit_button_rect.collidepoint(mouse_pos):
+            hover_icon_rect.center = exit_button_rect.center
+            WIN.blit(hover_icon_image, hover_icon_rect)
 
         pygame.display.update()  # Update the display
 
@@ -40,14 +60,15 @@ def title_screen():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:  # Check for mouse button press
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:  # Left mouse button
-                    if button_rect.collidepoint(event.pos):  # Check if clicked inside button
-                        running = False  # Exit the title screen loop
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:  # Check if Enter is pressed
-                    running = False  # Exit the title screen loop
-    
+                    if start_button_rect.collidepoint(event.pos):
+                        running = False  # Exit the title screen
+                    elif exit_button_rect.collidepoint(event.pos):
+                        pygame.quit()
+                        exit()
+
+    # Import and call the game loop after exiting the title screen
     from game import game_loop
     if not running:
         game_loop()
@@ -104,7 +125,7 @@ def display_player_stats(floor, timer=0):
     clock_icon_image = pygame.transform.scale(clock_icon_image, icon_size)
 
     # Define font settings
-    label_font = pygame.font.Font(FONTS["colonna"], 12)
+    label_font = pygame.font.Font(FONTS["colonna"], 14)
     value_font = pygame.font.Font(FONTS["colonna"], 24)
     value_font.set_bold(True)
 

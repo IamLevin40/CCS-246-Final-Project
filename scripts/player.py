@@ -97,7 +97,7 @@ class Player:
             self.float_x, self.float_y = self.x, self.y
             self.is_moving = False
 
-    def update_position(self, delta_time, door_positions, keys, active_powerups, maze):
+    def update_position(self, delta_time, keys, active_powerups, maze):
         if self.is_moving:
             # Calculate the movement step
             move_distance = delta_time * (self.speed * self.speed_multiplier)
@@ -141,12 +141,14 @@ class Player:
             self.animation_timer = 0
             self.frame_index = (self.frame_index + 1) % len(frames)
 
-    def draw(self, win, camera):
+    def draw(self, win, camera, opacity):
         # Adjust position by camera and draw player
         adjusted_rect = camera.apply(self)
         current_frame = self.animations[self.current_state][self.frame_index]
-        adjusted_rect = adjusted_rect.move(-current_frame.get_width() // 4, (-current_frame.get_height() // 4) - 8)
-        win.blit(current_frame, adjusted_rect)
+        temp_frame = current_frame.copy()
+        temp_frame.fill((255, 255, 255, opacity), special_flags=pygame.BLEND_RGBA_MULT)
+        adjusted_rect = adjusted_rect.move(-temp_frame.get_width() // 4, (-temp_frame.get_height() // 4) - 8)
+        win.blit(temp_frame, adjusted_rect)
 
     def update_timer(self, delta_time):
         # Decrement the timer by the elapsed time

@@ -208,32 +208,38 @@ INIT_SPEED_PLAYER = 100.0
 ENEMIES = {
     "pursuer": {
         "init_speed": 6.0,
-        "sprites": PURSUER_SPRITES
+        "sprites": PURSUER_SPRITES,
+        "offset_y": -8.0
     },
     "feigner": {
         "init_speed": 6.0,
-        "sprites": FEIGNER_SPRITES
+        "sprites": FEIGNER_SPRITES,
+        "offset_y": -8.0
     },
     "glimmer": {
         "init_speed": 6.0,
-        "sprites": GLIMMER_SPRITES
+        "sprites": GLIMMER_SPRITES,
+        "offset_y": -8.0
     },
     "ambusher": {
         "init_speed": 6.0,
-        "sprites": AMBUSHER_SPRITES
+        "sprites": AMBUSHER_SPRITES,
+        "offset_y": 0
     },
     "specter": {
         "init_speed": 6.0,
-        "sprites": SPECTER_SPRITES
+        "sprites": SPECTER_SPRITES,
+        "offset_y": -4.0
     },
     "slender": {
         "init_speed": 6.0,
-        "sprites": SLENDER_SPRITES
+        "sprites": SLENDER_SPRITES,
+        "offset_y": -8.0
     }
 }
 INIT_MAX_ENEMIES = 3
-MAX_FLOOR_TO_INCREASE_MAX_ENEMIES = 1
+MAX_FLOOR_TO_INCREASE_MAX_ENEMIES = 3
 MAX_FLOOR_TO_INCREASE_MAZE_SIZE = 1
-INIT_POWERUP_SPAWN_COOLDOWN = 8
 INIT_POWERUP_ACTIVATE_COOLDOWN = 2.5
+INIT_POWERUP_SPAWN_COOLDOWN = 8
 MAX_POWERUPS = 4

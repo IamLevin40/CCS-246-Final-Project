@@ -153,8 +153,8 @@ def game_loop():
                 player.floor_up_start_time = time.time()
             elif time.time() - player.floor_up_start_time >= 1:
                 player.floor_up()
+                active_powerups = [item for item in  active_powerups if item == player.current_powerup]
                 player, enemy_objects, maze, tile_map, door_positions, keys, camera = start_mechanics(player)
-                active_powerups.clear()
         else:
             player.floor_up_start_time = None
 
@@ -184,7 +184,7 @@ def game_loop():
             powerup_cooldown -= delta_time
 
         # Update player and enemy with time delta
-        player.update_position(delta_time, door_positions, keys, active_powerups, maze)
+        player.update_position(delta_time, keys, active_powerups, maze)
         player.update_timer(delta_time)
 
         # Update enemy movement
@@ -219,9 +219,9 @@ def game_loop():
         for powerup in active_powerups:
             if not powerup.collected:
                 powerup.draw(WIN, camera)
-        player.draw(WIN, camera)
+        player.draw(WIN, camera, (128 if player.is_immune else 255))
         for enemy in enemy_objects:
-            enemy.draw(WIN, camera)
+            enemy.draw(WIN, camera, ENEMIES[enemy.enemy_type]["offset_y"])
 
         display_player_stats(player.floor, player.timer)
         display_inventory(player.has_key, powerup_type, powerup_name, powerup_cooldown)
