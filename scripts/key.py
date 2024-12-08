@@ -3,6 +3,7 @@
 import pygame, random, math
 from settings import *
 from maze import *
+from audio_system import AudioSystem
 
 DOOR_LOCK_EVENT = pygame.USEREVENT + 1
 
@@ -75,6 +76,7 @@ def check_key_collection(player, keys):
             player.has_key = True
             player.key_is_real = key.is_real
             key.collected = True
+            AudioSystem.play_sfx("key_collected")
 
 def check_door_unlock(player, door_positions, maze):
     # Check if the player is near a door and has a key
@@ -85,8 +87,10 @@ def check_door_unlock(player, door_positions, maze):
             if abs(player.x - door_x) + abs(player.y - door_y) == 1 and maze[door_y][door_x] is not 'DU':  # Near the door
                 if player.key_is_real:
                     toggle_door(maze, door_positions, 'unlocked')
+                    AudioSystem.play_sfx("real_key_used")
                 else:
                     toggle_door(maze, door_positions, 'incorrect')
+                    AudioSystem.play_sfx("fake_key_used")
                     pygame.time.set_timer(DOOR_LOCK_EVENT, 2500)
                     
                 # Remove the key regardless of its authenticity

@@ -3,6 +3,7 @@
 import pygame, random, math, threading
 from settings import *
 from maze import *
+from audio_system import AudioSystem
 
 POWERUP_SPAWN_EVENT = pygame.USEREVENT + 2 
 
@@ -48,6 +49,7 @@ class Retreat(Powerup):
     def deactivate(self, player):
         player.speed_multiplier += 0.75
         player.teleport_to_safe_zone()
+        AudioSystem.play_sfx("retreat_teleported_to_safe_zone")
 
 class Immunity(Powerup):
     def __init__(self, x, y):
@@ -124,7 +126,7 @@ def check_powerup_collection(player, powerups):
             player.current_powerup = powerup
             player.has_powerup = True
             powerup.collected = True
-            break
+            AudioSystem.play_sfx("powerup_collected")
 
 
 POWERUP_CLASSES = {

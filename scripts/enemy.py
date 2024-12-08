@@ -4,6 +4,7 @@ import pygame, math, random, time
 from queue import PriorityQueue
 from settings import *
 from utils import split_and_resize_sprite
+from audio_system import AudioSystem
 
 class EnemyAI:
     def __init__(self, x, y, enemy_type):
@@ -134,6 +135,10 @@ class EnemyAI:
 # Subclasses for each enemy
 
 class Pursuer(EnemyAI):
+    def __init__(self, x, y, enemy_type):
+        super().__init__(x, y, enemy_type)
+        AudioSystem.play_sfx("pursuer_ambient", True, 0.0, (12.0, 18.0))
+    
     def move(self, player, maze, delta_time):
         # Target the player directly
         target = (player.x, player.y)
@@ -145,6 +150,7 @@ class Feigner(EnemyAI):
         self.random_target = None
         self.init_distance_away_from_player = 9
         self.init_distance_target_from_player = 9
+        AudioSystem.play_sfx("feigner_ambient", True, 0.0, (20.0, 30.0))
 
     def get_random_distant_target(self, player, maze):
         while True:
@@ -174,6 +180,7 @@ class Glimmer(EnemyAI):
         self.random_target = None
         self.init_distance_away_from_player = 9
         self.init_distance_target_from_player = 9
+        AudioSystem.play_sfx("glimmer_ambient", True, 0.0, (9.5, 16.5))
 
     def get_random_distant_target(self, player, maze):
         while True:
@@ -198,6 +205,10 @@ class Glimmer(EnemyAI):
         super().move(target, maze, delta_time)
 
 class Ambusher(EnemyAI):
+    def __init__(self, x, y, enemy_type):
+        super().__init__(x, y, enemy_type)
+        AudioSystem.play_sfx("ambusher_ambient", True, 0.0, (17.5, 23.5))
+    
     def move(self, player, maze, delta_time):
         direction_map = {
             "up": (0, -1),
@@ -244,6 +255,7 @@ class Specter(EnemyAI):
             if (self.x, self.y) == self.last_visited_position or (current_time - self.active_timer) >= self.active_duration:
                 self.is_doubled_speed_active = False
                 self.cooldown_timer = current_time  # Start cooldown
+            AudioSystem.play_sfx("specter_special_ambient")
         else:
             # If not in doubled speed mode, move towards player at half speed
             target = (player.x, player.y)
@@ -286,6 +298,7 @@ class Slender(EnemyAI):
         self.wall_pass_enabled = distance > self.wall_pass_threshold
         if self.wall_pass_enabled:
             self.current_state = "special"
+            AudioSystem.play_sfx("slender_special_ambient")
         else:
             # Reset to directional states
             if self.target_pos[0] > self.float_x:

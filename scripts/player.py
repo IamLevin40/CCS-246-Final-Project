@@ -5,6 +5,7 @@ from settings import *
 from utils import *
 from key import *
 from powerup import *
+from audio_system import AudioSystem
 
 class Player:
     def __init__(self, x, y, speed):
@@ -180,6 +181,7 @@ class Player:
         self.current_powerup.activate(self, enemies)
         self.has_powerup = False
         self.current_powerup = None
+        AudioSystem.play_sfx("skill_activated")
     
     def teleport_to_safe_zone(self):
         # Update the player's position to the safe zone

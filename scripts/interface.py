@@ -75,6 +75,7 @@ def title_screen():
                 pygame.quit()
                 exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
+                AudioSystem.play_sfx("button_pressed")
                 if event.button == 1:  # Left mouse button
                     if start_button_rect.collidepoint(event.pos):
                         running = False  # Exit the title screen
@@ -98,7 +99,7 @@ def game_over_screen():
     button_width, button_height = 130, 65
     back_button_image = pygame.image.load(UI_ICON_SPRITES["back_button"]).convert_alpha()
     back_button_image = pygame.transform.scale(back_button_image, (button_width, button_height))
-    back_button_rect = back_button_image.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 100))  # Position of back button
+    back_button_rect = back_button_image.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))  # Position of back button
 
     died_text_image = pygame.image.load(UI_ICON_SPRITES["died_text"]).convert_alpha()
     died_text_image = pygame.transform.scale(died_text_image, (button_width, button_height))
@@ -109,6 +110,8 @@ def game_over_screen():
     hover_icon_image = pygame.image.load(UI_ICON_SPRITES["hover_icon"]).convert_alpha()
     hover_icon_image = pygame.transform.scale(hover_icon_image, (button_width * 1.6, button_height * 1.6))
     hover_icon_rect = hover_icon_image.get_rect()
+
+    AudioSystem.stop_music()
 
     while running:
         # Draw the background image

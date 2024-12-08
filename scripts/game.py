@@ -10,9 +10,11 @@ from key import *
 from powerup import *
 from tilemap import *
 from camera import Camera
+from audio_system import AudioSystem
 
 
 def start_mechanics(existing_player=None):
+    AudioSystem.stop_all_sfx()
     # Calculate rows and cols based on the player floor
     rows = INIT_ROWS
     cols = INIT_COLS
@@ -123,6 +125,7 @@ def game_loop():
 
     clock = pygame.time.Clock()
     pygame.time.set_timer(POWERUP_SPAWN_EVENT, INIT_POWERUP_SPAWN_COOLDOWN * 1000)
+    AudioSystem.play_music("haunted_pumpkin", True)
 
     running = True
     while running:
@@ -142,6 +145,7 @@ def game_loop():
         
         # If game over, wait for 2 seconds and show game over screen
         if game_over:
+            AudioSystem.stop_all_sfx()
             if time.time() - game_over_start_time > 2:
                 if game_over_screen():
                     return  # Return to title screen
@@ -150,6 +154,7 @@ def game_loop():
 
         # Check if player is on 'P' tile to trigger level up after 2 seconds
         if player.current_tile == 'P':
+            AudioSystem.play_sfx("portal_teleporting")
             if player.floor_up_start_time is None:
                 player.floor_up_start_time = time.time()
             elif time.time() - player.floor_up_start_time >= 1:

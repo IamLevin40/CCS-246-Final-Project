@@ -37,10 +37,24 @@ FONTS = {
 
 AUDIO = {
     "music": {
-        "the_labyrinth": "resources/audio/music/niviro-the_labyrinth.mp3"
+        "the_labyrinth": "resources/audio/music/niviro-the_labyrinth.mp3",
+        "haunted_pumpkin": "resources/audio/music/haunted_pumpkin.mp3"
     },
     "sfx": {
-        "[sfx_id]": "[path_to_sfx]"
+        "button_pressed": ["resources/audio/sfx/button_pressed_1.mp3", "resources/audio/sfx/button_pressed_2.mp3"],
+        "key_collected": "resources/audio/sfx/key_collected.mp3",
+        "real_key_used": "resources/audio/sfx/real_key_used.mp3",
+        "fake_key_used": "resources/audio/sfx/fake_key_used.mp3",
+        "powerup_collected": "resources/audio/sfx/powerup_collected.mp3",
+        "skill_activated": "resources/audio/sfx/skill_activated.mp3",
+        "retreat_teleported_to_safe_zone": "resources/audio/sfx/retreat_teleported_to_safe_zone.mp3",
+        "portal_teleporting": "resources/audio/sfx/portal_teleporting.mp3",
+        "pursuer_ambient": "resources/audio/sfx/pursuer_ambient.mp3",
+        "feigner_ambient": "resources/audio/sfx/feigner_ambient.mp3",
+        "ambusher_ambient": "resources/audio/sfx/ambusher_ambient.mp3",
+        "glimmer_ambient": "resources/audio/sfx/glimmer_ambient.mp3",
+        "specter_special_ambient": "resources/audio/sfx/specter_special_ambient.mp3",
+        "slender_special_ambient": "resources/audio/sfx/slender_special_ambient.mp3"
     }
 }
 
@@ -216,35 +230,35 @@ UI_ICON_OBJECTS = {name: split_and_resize_sprite(path) for name, path in UI_ICON
 # Initial attributes
 INIT_TIMER = 60
 INIT_MIN_BONUS_LIMIT = 30
-INIT_SPEED_PLAYER = 100.0
+INIT_SPEED_PLAYER = 108.0
 ENEMIES = {
     "pursuer": {
-        "init_speed": 6.0,
+        "init_speed": 6.4,
         "sprites": PURSUER_SPRITES,
         "offset_y": -8.0
     },
     "feigner": {
-        "init_speed": 6.0,
+        "init_speed": 6.4,
         "sprites": FEIGNER_SPRITES,
         "offset_y": -8.0
     },
     "glimmer": {
-        "init_speed": 6.0,
+        "init_speed": 6.4,
         "sprites": GLIMMER_SPRITES,
         "offset_y": -8.0
     },
     "ambusher": {
-        "init_speed": 6.0,
+        "init_speed": 6.4,
         "sprites": AMBUSHER_SPRITES,
         "offset_y": 0
     },
     "specter": {
-        "init_speed": 6.0,
+        "init_speed": 6.4,
         "sprites": SPECTER_SPRITES,
         "offset_y": -4.0
     },
     "slender": {
-        "init_speed": 6.0,
+        "init_speed": 6.4,
         "sprites": SLENDER_SPRITES,
         "offset_y": -8.0
     }

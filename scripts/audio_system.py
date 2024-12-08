@@ -39,23 +39,22 @@ class AudioSystem:
         mixer.music.stop()
     
     @staticmethod
-    def play_sfx(sfx_id, offset=0.0, should_loop=False, duration_range=(0.0, 0.0)):
+    def play_sfx(sfx_id, should_loop=False, offset=0.0, duration_range=(0.0, 0.0)):
         # Play the specified sound effect
         if sfx_id not in AUDIO['sfx']:
             raise ValueError(f"SFX ID '{sfx_id}' not found in AUDIO['sfx'].")
-        
+
         # Check if the SFX is already playing
         if sfx_id in AudioSystem._playing_sfx:
-            print(f"SFX '{sfx_id}' is already playing and will be ignored.")
             return
 
         # Get a random path for the sound effect
         sfx_path = AudioSystem._get_random_path(AUDIO['sfx'][sfx_id])
         sound = mixer.Sound(sfx_path)
 
-        def loop_sfx():
+        def loop_sfx(stop_event):
             # Handle looping SFX with random durations
-            while sfx_id in AudioSystem._looping_sfx_threads:
+            while not stop_event.is_set():
                 channel = sound.play()
                 duration = random.uniform(*duration_range) if duration_range else sound.get_length()
                 pygame.time.delay(int(duration * 1000))
@@ -65,8 +64,9 @@ class AudioSystem:
             if not duration_range:
                 raise ValueError("Duration range must be provided for looping SFX.")
             # Start a thread for looping the SFX
-            AudioSystem._looping_sfx_threads[sfx_id] = threading.Thread(target=loop_sfx, daemon=True)
-            AudioSystem._looping_sfx_threads[sfx_id].start()
+            stop_event = threading.Event()
+            AudioSystem._looping_sfx_threads[sfx_id] = stop_event
+            threading.Thread(target=loop_sfx, args=(stop_event,), daemon=True).start()
         else:
             # Play the sound effect once
             channel = sound.play()
@@ -77,19 +77,34 @@ class AudioSystem:
                     pygame.time.delay(int(offset * 1000))
                     channel.stop()
 
+            # Create a thread to monitor the channel and remove it once playback ends
+            def monitor_sfx():
+                while channel.get_busy():  # Wait for the sound to finish playing
+                    pygame.time.delay(100)
+                # Remove the completed SFX from the list
+                AudioSystem._playing_sfx.pop(sfx_id, None)
+
+            threading.Thread(target=monitor_sfx, daemon=True).start()
+
     @staticmethod
-    def stop_sfx(sfx_id: str):
+    def stop_sfx(sfx_id):
         # Stop the specified SFX from playing
         if sfx_id in AudioSystem._looping_sfx_threads:
-            del AudioSystem._looping_sfx_threads[sfx_id]
+            stop_event = AudioSystem._looping_sfx_threads.pop(sfx_id)
+            stop_event.set()  # Signal the thread to stop
+
         if sfx_id in AudioSystem._playing_sfx:
             channel = AudioSystem._playing_sfx.pop(sfx_id)
             channel.stop()
 
     @staticmethod
     def stop_all_sfx():
-        # Stops all currently playing SFX
-        for sfx_id in list(AudioSystem._looping_sfx_threads.keys()):
-            AudioSystem.stop_sfx(sfx_id)
-        for sfx_id in list(AudioSystem._playing_sfx.keys()):
-            AudioSystem.stop_sfx(sfx_id)
+        # Stop all looping SFX
+        for sfx_id, stop_event in list(AudioSystem._looping_sfx_threads.items()):
+            stop_event.set()
+            del AudioSystem._looping_sfx_threads[sfx_id]
+        
+        # Stop all single-play SFX
+        for sfx_id, channel in list(AudioSystem._playing_sfx.items()):
+            channel.stop()
+            del AudioSystem._playing_sfx[sfx_id]
