@@ -90,24 +90,41 @@ def title_screen():
 
 def game_over_screen():
     running = True
-    button_color = WHITE  # Green color for the button
-    button_rect = pygame.Rect(WIDTH // 2 - 50, HEIGHT // 2, 100, 50)  # Button rectangle
+
+    # Scale images to fit the screen if necessary
+    game_over_bg_image = pygame.image.load(UI_ICON_SPRITES["game_over_bg"]).convert_alpha()
+    game_over_bg_image = pygame.transform.scale(game_over_bg_image, (WIDTH, HEIGHT))
+    
+    button_width, button_height = 130, 65
+    back_button_image = pygame.image.load(UI_ICON_SPRITES["back_button"]).convert_alpha()
+    back_button_image = pygame.transform.scale(back_button_image, (button_width, button_height))
+    back_button_rect = back_button_image.get_rect(center=(WIDTH // 2, HEIGHT // 2 + 100))  # Position of back button
+
+    died_text_image = pygame.image.load(UI_ICON_SPRITES["died_text"]).convert_alpha()
+    died_text_image = pygame.transform.scale(died_text_image, (button_width, button_height))
+    died_text_width, died_text_height = 330, 110
+    died_text_image = pygame.transform.scale(died_text_image, (died_text_width, died_text_height))
+    died_text_rect = died_text_image.get_rect(center=(WIDTH // 2, HEIGHT // 4))  # Position for the died text
+
+    hover_icon_image = pygame.image.load(UI_ICON_SPRITES["hover_icon"]).convert_alpha()
+    hover_icon_image = pygame.transform.scale(hover_icon_image, (button_width * 1.6, button_height * 1.6))
+    hover_icon_rect = hover_icon_image.get_rect()
 
     while running:
-        WIN.fill(PATH_COLOR)  # Clear the window with a white background
+        # Draw the background image
+        WIN.blit(game_over_bg_image, (0, 0))
+        WIN.blit(died_text_image, died_text_rect)
 
-        # Render title text
-        font = pygame.font.Font(None, 64)  # Use a default font with size 64
-        title_surface = font.render("Game Over", True, RED)
-        title_rect = title_surface.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))
-        WIN.blit(title_surface, title_rect)  # Draw the title
+        # Draw the back button image
+        WIN.blit(back_button_image, back_button_rect)
 
-        # Draw the play button
-        pygame.draw.rect(WIN, button_color, button_rect)  # Draw the button
-        button_font = pygame.font.Font(None, 36)
-        button_surface = button_font.render("Back", True, BLACK)  # Button text color
-        button_text_rect = button_surface.get_rect(center=button_rect.center)
-        WIN.blit(button_surface, button_text_rect)  # Draw the button text
+        # Get mouse position
+        mouse_pos = pygame.mouse.get_pos()
+
+        # Handle hover effects for back button
+        if back_button_rect.collidepoint(mouse_pos):
+            hover_icon_rect.center = back_button_rect.center
+            WIN.blit(hover_icon_image, hover_icon_rect)
 
         pygame.display.update()  # Update the display
 
@@ -118,11 +135,11 @@ def game_over_screen():
                 exit()
             if event.type == pygame.MOUSEBUTTONDOWN:  # Check for mouse button press
                 if event.button == 1:  # Left mouse button
-                    if button_rect.collidepoint(event.pos):  # Check if clicked inside button
-                        running = False  # Exit the title screen loop
+                    if back_button_rect.collidepoint(event.pos):  # Check if clicked inside button
+                        running = False  # Exit the game over screen loop
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:  # Check if Enter is pressed
-                    running = False  # Exit the title screen loop
+                    running = False  # Exit the game over screen loop
 
     title_screen()
 

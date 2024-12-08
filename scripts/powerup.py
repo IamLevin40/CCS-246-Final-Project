@@ -130,7 +130,7 @@ def check_powerup_collection(player, powerups):
 POWERUP_CLASSES = {
     # Format: (Class, weight)
     "rocket_boost": (RocketBoost, 1.0),
-    "retreat": (Retreat, 0.65),
-    "immunity": (Immunity, 0.5),
+    "retreat": (Retreat, 0.5),
+    "immunity": (Immunity, 0.35),
     "slow_move": (SlowMove, 0.85)
 }

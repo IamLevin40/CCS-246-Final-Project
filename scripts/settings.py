@@ -25,7 +25,7 @@ TIMER_BG_COLOR = (248, 199, 24)
 # Initialize Pygame
 pygame.init()
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Dungeon Labyrinth")
+pygame.display.set_caption("Tomb Rush")
 
 # Frame rate
 FPS = 60
@@ -195,7 +195,10 @@ UI_ICON_SPRITES = {
     "inventory_holder": "sprites/ui_icons/inventory_holder.png",
     "stats_holder": "sprites/ui_icons/stats_holder.png",
     "floor": "sprites/ui_icons/floor.png",
-    "clock": "sprites/ui_icons/clock.png"
+    "clock": "sprites/ui_icons/clock.png",
+    "game_over_bg": "sprites/ui_icons/game_over_bg.png",
+    "died_text": "sprites/ui_icons/died_text.png",
+    "back_button": "sprites/ui_icons/back_button.png"
 }
 
 PATH_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in PATH_TILE_SPRITES.items()}
