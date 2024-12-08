@@ -54,7 +54,7 @@ class AudioSystem:
         sound = mixer.Sound(sfx_path)
 
         def loop_sfx():
-            # andle looping SFX with random durations
+            # Handle looping SFX with random durations
             while sfx_id in AudioSystem._looping_sfx_threads:
                 channel = sound.play()
                 duration = random.uniform(*duration_range) if duration_range else sound.get_length()

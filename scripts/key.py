@@ -82,7 +82,7 @@ def check_door_unlock(player, door_positions, maze):
         pygame.time.set_timer(DOOR_LOCK_EVENT, 0)
         # Iterate for every door tiles
         for door_y, door_x in door_positions:
-            if abs(player.x - door_x) + abs(player.y - door_y) == 1:  # Near the door
+            if abs(player.x - door_x) + abs(player.y - door_y) == 1 and maze[door_y][door_x] is not 'DU':  # Near the door
                 if player.key_is_real:
                     toggle_door(maze, door_positions, 'unlocked')
                 else:

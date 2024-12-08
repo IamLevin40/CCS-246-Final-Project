@@ -162,13 +162,13 @@ def game_loop():
         # Key binds for the player
         key_binds = pygame.key.get_pressed()
         if key_binds[pygame.K_w] or key_binds[pygame.K_UP]:
-            player.move(0, -1, maze)
+            player.request_direction(0, -1, maze)
         if key_binds[pygame.K_s] or key_binds[pygame.K_DOWN]:
-            player.move(0, 1, maze)
+            player.request_direction(0, 1, maze)
         if key_binds[pygame.K_a] or key_binds[pygame.K_LEFT]:
-            player.move(-1, 0, maze)
+            player.request_direction(-1, 0, maze)
         if key_binds[pygame.K_d] or key_binds[pygame.K_RIGHT]:
-            player.move(1, 0, maze)
+            player.request_direction(1, 0, maze)
 
         # Activate powerup on pressing E or , key if cooldown is over
         if (key_binds[pygame.K_e] or key_binds[pygame.K_COMMA])and player.has_powerup and powerup_cooldown <= 0:
@@ -184,8 +184,8 @@ def game_loop():
         if powerup_cooldown > 0:
             powerup_cooldown -= delta_time
 
-        # Update player and enemy with time delta
-        player.update_position(delta_time, keys, active_powerups, maze)
+        # Update player movement
+        player.move(delta_time, keys, active_powerups, maze)
         player.update_timer(delta_time)
 
         # Update enemy movement

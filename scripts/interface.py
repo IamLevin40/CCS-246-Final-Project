@@ -20,7 +20,7 @@ def title_screen():
     bg_image = pygame.image.load(UI_ICON_SPRITES["title_screen_bg"]).convert()
     bg_image = pygame.transform.scale(bg_image, (WIDTH, HEIGHT))  # Scale to fit screen
 
-    button_width, button_height = 180, 90  # Target dimensions for buttons
+    button_width, button_height = 130, 65  # Target dimensions for buttons
     start_button_image = pygame.image.load(UI_ICON_SPRITES["start_button"]).convert_alpha()
     start_button_image = pygame.transform.scale(start_button_image, (button_width, button_height))
     exit_button_image = pygame.image.load(UI_ICON_SPRITES["exit_button"]).convert_alpha()
@@ -29,14 +29,26 @@ def title_screen():
     hover_icon_image = pygame.image.load(UI_ICON_SPRITES["hover_icon"]).convert_alpha()
     hover_icon_image = pygame.transform.scale(hover_icon_image, (button_width * 1.6, button_height * 1.6))
 
+    title_image = pygame.image.load(UI_ICON_SPRITES["title"]).convert_alpha()
+    title_image_width, title_image_height = 330, 110  # Target dimensions for title
+    title_image = pygame.transform.scale(title_image, (title_image_width, title_image_height))
+
     # Button positions
-    start_button_rect = pygame.Rect(WIDTH // 2 + 140, HEIGHT // 2 - 90, button_width, button_height)
-    exit_button_rect = pygame.Rect(WIDTH // 2 + 140, HEIGHT // 2 + 10, button_width, button_height)
+    start_button_rect = pygame.Rect(WIDTH // 2 + 160, HEIGHT // 2 - 20, button_width, button_height)
+    exit_button_rect = pygame.Rect(WIDTH // 2 + 160, HEIGHT // 2 + 40, button_width, button_height)
     hover_icon_rect = hover_icon_image.get_rect()
+
+    # Title position (above the start button)
+    title_x = WIDTH // 2 + 160 - title_image_width // 2 + button_width // 2
+    title_y = start_button_rect.top - title_image_height - 20
+
     AudioSystem.play_music("the_labyrinth", True)
 
     while running:
         WIN.blit(bg_image, (0, 0))  # Draw background image
+
+        # Draw title
+        WIN.blit(title_image, (title_x, title_y))
         
         # Draw buttons
         WIN.blit(start_button_image, start_button_rect)
@@ -176,7 +188,7 @@ def display_inventory(has_key, powerup_type=None, powerup_name="", powerup_coold
     # Define fonts for cooldown text and powerup name
     cooldown_font = pygame.font.Font(FONTS["colonna"], 18)
     cooldown_font.set_bold(True)
-    name_font = pygame.font.Font(FONTS["colonna"], 14)
+    name_font = pygame.font.Font(FONTS["colonna"], 15)
     name_font.set_bold(True)
 
     # Load holder and keypad images
@@ -216,7 +228,7 @@ def display_inventory(has_key, powerup_type=None, powerup_name="", powerup_coold
         WIN.blit(powerup_image, (holder1_x + (to_center // 2) - 1, bottom_padding + (to_center // 2) - 1))
 
         # Render powerup name above the first holder
-        name_text = name_font.render(powerup_name.upper(), True, WHITE)
+        name_text = name_font.render(powerup_name.upper(), True, BLACK)
         name_rect = name_text.get_rect(center=(holder1_x + holder_size // 2, bottom_padding - 8))
         WIN.blit(name_text, name_rect)
 

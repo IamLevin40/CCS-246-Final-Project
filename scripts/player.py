@@ -53,7 +53,7 @@ class Player:
         # Player rectangle for rendering
         self.rect = pygame.Rect(self.x * TILE_SIZE, self.y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
 
-    def move(self, dx, dy, maze):
+    def request_direction(self, dx, dy, maze):
         # Set the requested direction
         self.requested_direction = (dx, dy)
         if not self.is_moving:
@@ -97,7 +97,7 @@ class Player:
             self.float_x, self.float_y = self.x, self.y
             self.is_moving = False
 
-    def update_position(self, delta_time, keys, active_powerups, maze):
+    def move(self, delta_time, keys, active_powerups, maze):
         if self.is_moving:
             # Calculate the movement step
             move_distance = delta_time * (self.speed * self.speed_multiplier)

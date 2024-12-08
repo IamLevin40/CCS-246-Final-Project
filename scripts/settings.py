@@ -14,6 +14,7 @@ PORTAL_STRUCTURE_SIZE = 3
 PATH_COLOR = (10, 10, 10)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+SHADOW = (15, 15, 15)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
@@ -97,21 +98,21 @@ SLENDER_SPRITES = {
 
 PATH_TILE_SPRITES = {
     # Four-direction patterns
-    "side_end": "sprites/path_tiles/all_sides.png",
-    "adjacent": "sprites/path_tiles/all_sides.png",
-    "l_junction": "sprites/path_tiles/all_sides.png",
-    "t_junction": "sprites/path_tiles/all_sides.png",
-    "cross": "sprites/path_tiles/all_sides.png",
-    "no_side": "sprites/path_tiles/all_sides.png",
+    "side_end": "sprites/path_tiles/side_end.png",
+    "adjacent": "sprites/path_tiles/adjacent.png",
+    "l_junction": "sprites/path_tiles/l_junction.png",
+    "t_junction": "sprites/path_tiles/t_junction.png",
+    "cross": "sprites/path_tiles/cross.png",
+    "no_side": "sprites/path_tiles/no_side.png",
     # Eight-direction patterns
-    "edge": "sprites/path_tiles/all_sides.png",
-    "violin": "sprites/path_tiles/all_sides.png",
-    "axe": "sprites/path_tiles/all_sides.png",
-    "rectangle": "sprites/path_tiles/all_sides.png",
-    "fish": "sprites/path_tiles/all_sides.png",
-    "chameleon": "sprites/path_tiles/all_sides.png",
-    "butterfly": "sprites/path_tiles/all_sides.png",
-    "one_twisted": "sprites/path_tiles/all_sides.png",
+    "edge": "sprites/path_tiles/edge.png",
+    "violin": "sprites/path_tiles/violin.png",
+    "axe": "sprites/path_tiles/axe.png",
+    "rectangle": "sprites/path_tiles/rectangle.png",
+    "fish": "sprites/path_tiles/fish.png",
+    "chameleon": "sprites/path_tiles/chameleon.png",
+    "butterfly": "sprites/path_tiles/butterfly.png",
+    "one_twisted": "sprites/path_tiles/one_twisted.png",
     "all_sides": "sprites/path_tiles/all_sides.png",
 }
 
@@ -187,6 +188,7 @@ KEYPAD_SPRITES = {
 
 UI_ICON_SPRITES = {
     "title_screen_bg": "sprites/ui_icons/title_screen_bg.png",
+    "title": "sprites/ui_icons/title.png",
     "start_button": "sprites/ui_icons/start_button.png",
     "exit_button": "sprites/ui_icons/exit_button.png",
     "hover_icon": "sprites/ui_icons/hover_icon.png",
