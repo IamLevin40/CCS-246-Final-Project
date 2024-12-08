@@ -265,6 +265,10 @@ class Specter(EnemyAI):
                 self.current_state = "down"
             elif self.target_pos[1] < self.float_y:
                 self.current_state = "up"
+            
+            if self.previous_state is not self.current_state:
+                self.frame_index = 0
+                self.previous_state = self.current_state
 
         super().move(target, maze, delta_time)
 
@@ -292,6 +296,10 @@ class Slender(EnemyAI):
                 self.current_state = "down"
             elif self.target_pos[1] < self.float_y:
                 self.current_state = "up"
+            
+            if self.previous_state is not self.current_state:
+                self.frame_index = 0
+                self.previous_state = self.current_state
 
         target = (player.x, player.y)
         super().move(target, maze, delta_time, self.wall_pass_enabled)
@@ -303,6 +311,6 @@ ENEMY_CLASSES = {
     "feigner": (Feigner, 1, 1.0),
     "glimmer": (Glimmer, 1, 0.9),
     "ambusher": (Ambusher, 1, 0.8),
-    "specter": (Specter, 1 + (MAX_FLOOR_TO_INCREASE_MAX_ENEMIES * 1), 0.7),
-    "slender": (Slender, 1 + (MAX_FLOOR_TO_INCREASE_MAX_ENEMIES * 2), 0.6)
+    "specter": (Specter, 1 + (MAX_FLOOR_TO_UNLOCK_NEW_ENEMY * 1), 0.7),
+    "slender": (Slender, 1 + (MAX_FLOOR_TO_UNLOCK_NEW_ENEMY * 2), 0.6)
 }

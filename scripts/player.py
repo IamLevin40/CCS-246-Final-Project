@@ -16,7 +16,7 @@ class Player:
         self.has_powerup = False
         self.current_powerup = None
         self.active_powerups = None
-        self.is_immune = True
+        self.is_immune = False
         self.can_collect = True
         self.floor = 1
         self.maze_interaction_triggered = False

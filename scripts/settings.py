@@ -34,6 +34,15 @@ FONTS = {
     "colonna": "resources/fonts/colonna.ttf"
 }
 
+AUDIO = {
+    "music": {
+        "the_labyrinth": "resources/audio/music/niviro-the_labyrinth.mp3"
+    },
+    "sfx": {
+        "[sfx_id]": "[path_to_sfx]"
+    }
+}
+
 # Paths to sprite images
 PLAYER_SPRITES = {
     "up": "sprites/player/up.png",
@@ -166,6 +175,7 @@ POWERUP_SPRITES = {
     "immunity": "sprites/powerups/immunity.png",
     "slow_move": "sprites/powerups/slow_move.png"
 }
+
 KEYPAD_SPRITES = {
     "keypad_w": "sprites/keypads/keypad_w.png",
     "keypad_a": "sprites/keypads/keypad_a.png",
@@ -174,6 +184,7 @@ KEYPAD_SPRITES = {
     "keypad_e": "sprites/keypads/keypad_e.png",
     "keypad_r": "sprites/keypads/keypad_r.png"
 }
+
 UI_ICON_SPRITES = {
     "title_screen_bg": "sprites/ui_icons/title_screen_bg.png",
     "start_button": "sprites/ui_icons/start_button.png",
@@ -187,11 +198,7 @@ UI_ICON_SPRITES = {
 
 PATH_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in PATH_TILE_SPRITES.items()}
 WALL_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in WALL_TILE_SPRITES.items()}
-DOOR_TILES = {
-    state: {pattern: split_and_resize_sprite(path, TILE_SIZE) 
-            for pattern, path in patterns.items()}
-    for state, patterns in DOOR_TILE_SPRITES.items()
-}
+DOOR_TILES = {state: {pattern: split_and_resize_sprite(path, TILE_SIZE) for pattern, path in patterns.items()} for state, patterns in DOOR_TILE_SPRITES.items()}
 STRUCTURE_FLOOR_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in STRUCTURE_FLOOR_TILE_SPRITES.items()}
 STRUCTURE_PORTAL_TILES = {state: split_and_resize_sprite(path, TILE_SIZE) for state, path in STRUCTURE_PORTAL_TILE_SPRITES.items()}
 
@@ -239,7 +246,9 @@ ENEMIES = {
 }
 INIT_MAX_ENEMIES = 3
 MAX_FLOOR_TO_INCREASE_MAX_ENEMIES = 3
+MAX_FLOOR_TO_UNLOCK_NEW_ENEMY = 3
 MAX_FLOOR_TO_INCREASE_MAZE_SIZE = 1
 INIT_POWERUP_ACTIVATE_COOLDOWN = 2.5
 INIT_POWERUP_SPAWN_COOLDOWN = 8
 MAX_POWERUPS = 4
+MAX_KEYS = 4

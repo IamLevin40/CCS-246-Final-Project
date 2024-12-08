@@ -27,6 +27,7 @@ def start_mechanics(existing_player=None):
         
         player.x, player.y = rows // 2, cols // 2  # Reset player position
         player.float_x, player.float_y = player.x, player.y
+        player.safe_zone_pos = (player.x, player.y)
         player.target_pos = (player.x, player.y)
         player.current_tile = ''
     else:

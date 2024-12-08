@@ -3,6 +3,7 @@
 import pygame
 from settings import *
 from utils import *
+from audio_system import AudioSystem
 
 def draw_maze(maze, camera, tile_map):
     for i in range(len(maze)):
@@ -29,9 +30,10 @@ def title_screen():
     hover_icon_image = pygame.transform.scale(hover_icon_image, (button_width * 1.6, button_height * 1.6))
 
     # Button positions
-    start_button_rect = pygame.Rect(WIDTH // 2 + 140, HEIGHT // 2 - 100, button_width, button_height)
-    exit_button_rect = pygame.Rect(WIDTH // 2 + 140, HEIGHT // 2 + 20, button_width, button_height)
+    start_button_rect = pygame.Rect(WIDTH // 2 + 140, HEIGHT // 2 - 90, button_width, button_height)
+    exit_button_rect = pygame.Rect(WIDTH // 2 + 140, HEIGHT // 2 + 10, button_width, button_height)
     hover_icon_rect = hover_icon_image.get_rect()
+    AudioSystem.play_music("the_labyrinth", True)
 
     while running:
         WIN.blit(bg_image, (0, 0))  # Draw background image
@@ -71,6 +73,7 @@ def title_screen():
     # Import and call the game loop after exiting the title screen
     from game import game_loop
     if not running:
+        AudioSystem.stop_music()
         game_loop()
 
 def game_over_screen():

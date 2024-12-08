@@ -20,7 +20,7 @@ class Key:
         key_sprite = KEY_OBJECTS['real'] if self.is_real else KEY_OBJECTS['fake']
         win.blit(key_sprite, (x, y))
 
-def generate_keys(maze, center_x, center_y, num_keys=4):
+def generate_keys(maze, center_x, center_y):
     min_distance_from_center = 12
     min_distance_from_key = 8
     min_distance_from_structure = 12 
@@ -28,7 +28,7 @@ def generate_keys(maze, center_x, center_y, num_keys=4):
     keys = []
     real_key_added = False
 
-    while len(keys) < num_keys:
+    while len(keys) < MAX_KEYS:
         # Generate random coordinates within maze bounds
         x, y = random.randint(1, len(maze[0]) - 2), random.randint(1, len(maze) - 2)
         
